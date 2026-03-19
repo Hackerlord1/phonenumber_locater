@@ -9,7 +9,7 @@ import {
   ChevronDown, ChevronUp, Database, RefreshCw, X,
   Facebook, Twitter, Instagram, Linkedin, Smartphone,
   Radio, Activity, Clock, AlertTriangle, CheckCircle,
-  Loader2
+  Loader2, Users
 } from "lucide-react";
 import Link from "next/link";
 import { historyService } from "@/components/history/HistoryService";
