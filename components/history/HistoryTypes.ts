@@ -16,6 +16,7 @@ export interface HistoryEntry {
   deviceModel?: string;
   os?: string;
   lastSeen?: string;
+  cityPopulation?: number;
   socialMedia?: {
     facebook?: string;
     instagram?: string;

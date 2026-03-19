@@ -3,12 +3,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  History, ArrowLeft, Search, Trash2, Download, Upload, 
-  ShieldAlert, MapPin, Phone, Globe, Calendar, Filter,
-  ChevronDown, ChevronUp, Database, RefreshCw, X,
+import {
+  History, ArrowLeft, Search, Trash2, Download, Upload,
+  ShieldAlert, MapPin, Globe, Calendar,
+  ChevronDown, ChevronUp, Database, RefreshCw,
   Facebook, Twitter, Instagram, Linkedin, Smartphone,
-  Radio, Activity, Clock, AlertTriangle, CheckCircle,
+  Activity, Clock, AlertTriangle,
   Users
 } from "lucide-react";
 import Link from "next/link";
@@ -30,7 +30,6 @@ export default function HistoryPage() {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load history on mount
   useEffect(() => {
     loadHistory();
   }, []);
@@ -44,7 +43,6 @@ export default function HistoryPage() {
     setIsLoading(false);
   };
 
-  // Apply filters and sorting
   const applyFilters = (
     items: HistoryEntry[],
     query: string,
@@ -55,10 +53,9 @@ export default function HistoryPage() {
   ) => {
     let filtered = [...items];
 
-    // Apply search
     if (query) {
       const lowercaseQuery = query.toLowerCase();
-      filtered = filtered.filter(entry => 
+      filtered = filtered.filter(entry =>
         entry.number.toLowerCase().includes(lowercaseQuery) ||
         entry.country.toLowerCase().includes(lowercaseQuery) ||
         entry.city.toLowerCase().includes(lowercaseQuery) ||
@@ -66,12 +63,10 @@ export default function HistoryPage() {
       );
     }
 
-    // Apply country filter
     if (country !== 'all') {
       filtered = filtered.filter(entry => entry.countryCode === country);
     }
 
-    // Apply risk filter
     if (risk !== 'all') {
       filtered = filtered.filter(entry => {
         if (!entry.riskScore) return false;
@@ -82,7 +77,6 @@ export default function HistoryPage() {
       });
     }
 
-    // Apply sorting
     filtered.sort((a, b) => {
       let comparison = 0;
       if (sort === 'date') {
@@ -98,12 +92,10 @@ export default function HistoryPage() {
     setFilteredHistory(filtered);
   };
 
-  // Handle search
   useEffect(() => {
     applyFilters(history, searchQuery, filterCountry, filterRisk, sortBy, sortOrder);
   }, [searchQuery, filterCountry, filterRisk, sortBy, sortOrder, history]);
 
-  // Get unique countries for filter
   const uniqueCountries = [...new Set(history.map(entry => entry.countryCode))];
 
   const handleDeleteEntry = (phoneNumber: string, e: React.MouseEvent) => {
@@ -178,7 +170,6 @@ export default function HistoryPage() {
 
   const deleteSelected = () => {
     if (selectedEntries.length === 0) return;
-    
     if (window.confirm(`Delete ${selectedEntries.length} selected entries?`)) {
       selectedEntries.forEach(phoneNumber => {
         historyService.removeEntry(phoneNumber);
@@ -208,7 +199,7 @@ export default function HistoryPage() {
       <header className="border-b border-gray-800/50 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link 
+            <Link
               href="/"
               className="p-2 hover:bg-gray-800/50 rounded-lg transition flex items-center gap-2 text-gray-400 hover:text-white"
             >
@@ -220,7 +211,9 @@ export default function HistoryPage() {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <History className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-light">history <span className="font-bold text-blue-500">directory</span></span>
+              <span className="text-xl font-light">
+                history <span className="font-bold text-blue-500">directory</span>
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -261,7 +254,7 @@ export default function HistoryPage() {
               </div>
               <p className="text-2xl font-bold text-white">{stats.totalSearches}</p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-green-600/10 to-emerald-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Globe className="h-5 w-5 text-green-500" />
@@ -269,7 +262,7 @@ export default function HistoryPage() {
               </div>
               <p className="text-2xl font-bold text-white">{stats.uniqueCountries}</p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-yellow-600/10 to-orange-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Activity className="h-5 w-5 text-yellow-500" />
@@ -279,14 +272,16 @@ export default function HistoryPage() {
                 {stats.averageRiskScore}
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <span className="text-sm text-gray-400">Last Search</span>
               </div>
               <p className="text-lg font-bold text-white">
-                {stats.lastSearchDate ? new Date(stats.lastSearchDate).toLocaleDateString() : 'Never'}
+                {stats.lastSearchDate
+                  ? new Date(stats.lastSearchDate).toLocaleDateString()
+                  : 'Never'}
               </p>
             </div>
           </div>
@@ -295,7 +290,6 @@ export default function HistoryPage() {
         {/* Filters and Search */}
         <div className="bg-[#1e1f2c] border border-gray-800/50 rounded-lg p-4 mb-6">
           <div className="flex flex-wrap gap-4">
-            {/* Search */}
             <div className="flex-1 min-w-[300px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -309,7 +303,6 @@ export default function HistoryPage() {
               </div>
             </div>
 
-            {/* Country Filter */}
             <select
               value={filterCountry}
               onChange={(e) => setFilterCountry(e.target.value)}
@@ -321,7 +314,6 @@ export default function HistoryPage() {
               ))}
             </select>
 
-            {/* Risk Filter */}
             <select
               value={filterRisk}
               onChange={(e) => setFilterRisk(e.target.value)}
@@ -333,7 +325,6 @@ export default function HistoryPage() {
               <option value="low">Low Risk (below 70)</option>
             </select>
 
-            {/* Sort By */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'country' | 'risk')}
@@ -344,16 +335,16 @@ export default function HistoryPage() {
               <option value="risk">Sort by Risk</option>
             </select>
 
-            {/* Sort Order */}
             <button
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
               className="px-4 py-2 bg-[#141824] border border-gray-700/50 rounded-lg text-sm text-white hover:bg-[#1e1f2c] transition flex items-center gap-2"
             >
-              {sortOrder === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {sortOrder === 'asc'
+                ? <ChevronUp className="h-4 w-4" />
+                : <ChevronDown className="h-4 w-4" />}
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
 
-            {/* Bulk Actions */}
             {selectedEntries.length > 0 && (
               <button
                 onClick={deleteSelected}
@@ -364,7 +355,6 @@ export default function HistoryPage() {
               </button>
             )}
 
-            {/* Clear All */}
             <button
               onClick={() => setShowClearAllConfirm(true)}
               className="px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 rounded-lg transition flex items-center gap-2"
@@ -377,12 +367,15 @@ export default function HistoryPage() {
 
         {/* History List */}
         <div className="bg-[#1e1f2c] border border-gray-800/50 rounded-lg overflow-hidden">
-          {/* Header */}
+          {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 bg-gray-800/30 border-b border-gray-800/50 text-xs font-medium text-gray-400">
             <div className="col-span-1 flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={selectedEntries.length === filteredHistory.length && filteredHistory.length > 0}
+                checked={
+                  selectedEntries.length === filteredHistory.length &&
+                  filteredHistory.length > 0
+                }
                 onChange={toggleAllSelection}
                 className="rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-0"
               />
@@ -409,7 +402,9 @@ export default function HistoryPage() {
               <History className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">No history entries found</p>
               <p className="text-sm text-gray-600 mt-2">
-                {searchQuery ? 'Try adjusting your search filters' : 'Searches will appear here'}
+                {searchQuery
+                  ? 'Try adjusting your search filters'
+                  : 'Searches will appear here'}
               </p>
             </div>
           )}
@@ -435,52 +430,66 @@ export default function HistoryPage() {
                       className="rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-0"
                     />
                   </div>
-                  
+
                   <div className="col-span-2">
                     <div className="flex items-center gap-2">
                       {entry.flag && (
-                        <img src={entry.flag} alt={entry.country} className="w-5 h-3 object-cover rounded" />
+                        <img
+                          src={entry.flag}
+                          alt={entry.country}
+                          className="w-5 h-3 object-cover rounded"
+                        />
                       )}
                       <span className="text-sm font-medium text-white">{entry.number}</span>
                     </div>
                   </div>
-                  
+
                   <div className="col-span-2">
                     <p className="text-sm text-white">{entry.city}</p>
                     <p className="text-xs text-gray-500">{entry.country}</p>
                   </div>
-                  
+
                   <div className="col-span-2">
                     <p className="text-sm text-white">{entry.deviceModel || 'Unknown'}</p>
                     <p className="text-xs text-gray-500">{entry.carrier || 'Unknown'}</p>
                   </div>
-                  
+
                   <div className="col-span-2">
                     {entry.riskScore ? (
                       <div className={`inline-flex items-center gap-1 px-2 py-1 rounded ${getRiskBg(entry.riskScore)}`}>
                         <ShieldAlert className={`h-3 w-3 ${getRiskColor(entry.riskScore)}`} />
                         <span className={`text-xs font-medium ${getRiskColor(entry.riskScore)}`}>
-                          {entry.riskScore} {entry.darkWebMentions ? `(${entry.darkWebMentions} DW)` : ''}
+                          {entry.riskScore}{entry.darkWebMentions ? ` (${entry.darkWebMentions} DW)` : ''}
                         </span>
                       </div>
                     ) : (
                       <span className="text-xs text-gray-600">No data</span>
                     )}
                   </div>
-                  
+
                   <div className="col-span-2">
-                    <p className="text-sm text-white">{new Date(entry.timestamp).toLocaleDateString()}</p>
-                    <p className="text-xs text-gray-500">{new Date(entry.timestamp).toLocaleTimeString()}</p>
+                    <p className="text-sm text-white">
+                      {new Date(entry.timestamp).toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(entry.timestamp).toLocaleTimeString()}
+                    </p>
                   </div>
-                  
+
                   <div className="col-span-1 flex items-center gap-2">
                     <button
-                      onClick={() => setExpandedEntry(expandedEntry === entry.number ? null : entry.number)}
+                      onClick={() =>
+                        setExpandedEntry(
+                          expandedEntry === entry.number ? null : entry.number
+                        )
+                      }
                       className="p-1.5 hover:bg-gray-700/50 rounded transition"
                     >
-                      <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${
-                        expandedEntry === entry.number ? 'rotate-180' : ''
-                      }`} />
+                      <ChevronDown
+                        className={`h-4 w-4 text-gray-400 transition-transform ${
+                          expandedEntry === entry.number ? 'rotate-180' : ''
+                        }`}
+                      />
                     </button>
                     <button
                       onClick={(e) => handleDeleteEntry(entry.number, e)}
@@ -525,7 +534,9 @@ export default function HistoryPage() {
                             {entry.cityPopulation && (
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-400">Population:</span>
-                                <span className="text-white">{entry.cityPopulation.toLocaleString()}</span>
+                                <span className="text-white">
+                                  {entry.cityPopulation.toLocaleString()}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -568,25 +579,33 @@ export default function HistoryPage() {
                               {entry.socialMedia.facebook && (
                                 <div className="flex items-center gap-2 text-sm">
                                   <Facebook className="h-3 w-3 text-blue-500" />
-                                  <span className="text-gray-400 truncate">{entry.socialMedia.facebook}</span>
+                                  <span className="text-gray-400 truncate">
+                                    {entry.socialMedia.facebook}
+                                  </span>
                                 </div>
                               )}
                               {entry.socialMedia.instagram && (
                                 <div className="flex items-center gap-2 text-sm">
                                   <Instagram className="h-3 w-3 text-pink-500" />
-                                  <span className="text-gray-400 truncate">{entry.socialMedia.instagram}</span>
+                                  <span className="text-gray-400 truncate">
+                                    {entry.socialMedia.instagram}
+                                  </span>
                                 </div>
                               )}
                               {entry.socialMedia.twitter && (
                                 <div className="flex items-center gap-2 text-sm">
                                   <Twitter className="h-3 w-3 text-sky-500" />
-                                  <span className="text-gray-400 truncate">{entry.socialMedia.twitter}</span>
+                                  <span className="text-gray-400 truncate">
+                                    {entry.socialMedia.twitter}
+                                  </span>
                                 </div>
                               )}
                               {entry.socialMedia.linkedin && (
                                 <div className="flex items-center gap-2 text-sm">
                                   <Linkedin className="h-3 w-3 text-blue-700" />
-                                  <span className="text-gray-400 truncate">{entry.socialMedia.linkedin}</span>
+                                  <span className="text-gray-400 truncate">
+                                    {entry.socialMedia.linkedin}
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -620,10 +639,12 @@ export default function HistoryPage() {
                         </div>
                       </div>
 
-                      {/* Delete confirmation */}
+                      {/* Delete Confirmation */}
                       {showDeleteConfirm === entry.number && (
                         <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center justify-between">
-                          <span className="text-sm text-red-400">Delete this entry permanently?</span>
+                          <span className="text-sm text-red-400">
+                            Delete this entry permanently?
+                          </span>
                           <div className="flex gap-2">
                             <button
                               onClick={() => confirmDelete(entry.number)}
@@ -648,14 +669,14 @@ export default function HistoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* Footer Stats */}
+        {/* Footer */}
         <div className="mt-4 flex items-center justify-between text-xs text-gray-600">
           <span>Showing {filteredHistory.length} of {history.length} entries</span>
           <span>Last updated: {new Date().toLocaleString()}</span>
         </div>
       </div>
 
-      {/* Clear All Confirmation Modal */}
+      {/* Clear All Modal */}
       <AnimatePresence>
         {showClearAllConfirm && (
           <motion.div
@@ -676,11 +697,9 @@ export default function HistoryPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-white">Clear All History</h3>
               </div>
-              
               <p className="text-gray-400 mb-6">
                 Are you sure you want to delete all history entries? This action cannot be undone.
               </p>
-
               <div className="flex gap-3">
                 <button
                   onClick={handleClearAll}

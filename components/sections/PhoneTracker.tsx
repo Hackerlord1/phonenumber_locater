@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Phone, MapPin, ChevronDown, HelpCircle, Settings, Loader2, 
-  CheckCircle, XCircle, Globe, Map as MapIcon, History, 
-  Shield, ShieldAlert, Eye, EyeOff, Database, Lock, 
-  Fingerprint, Wifi, Radio, Satellite, Activity, AlertCircle,
-  Facebook, Twitter, Instagram, Linkedin, Github, MessageCircle,
-  Mail, PhoneCall, CreditCard, MapPin as MapPinIcon,
-  TrendingUp, Users, Target, Search, Compass, Smartphone,
+import {
+  Phone, MapPin, ChevronDown, HelpCircle, Settings, Loader2,
+  CheckCircle, Globe, Map as MapIcon,
+  Shield, ShieldAlert, Database, Lock,
+  Fingerprint, Radio, Satellite, Activity,
+  Facebook, Twitter, Instagram, Linkedin,
+  MessageCircle, CreditCard, MapPin as MapPinIcon,
+  Users, Target, Search, Compass, Smartphone,
   Clock
 } from "lucide-react";
 import { SpinningEarth } from "@/components/ui/SpinningEarth";
@@ -112,26 +112,6 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Pasir Ris", latitude: 1.3721, longitude: 103.9494, country: "SG", region: "East", population: 130000 },
     { name: "Punggol", latitude: 1.4045, longitude: 103.9120, country: "SG", region: "North-East", population: 170000 },
     { name: "Bukit Panjang", latitude: 1.3802, longitude: 103.7638, country: "SG", region: "West", population: 140000 },
-    { name: "Changi Village", latitude: 1.3894, longitude: 103.9872, country: "SG", region: "East", population: 2000 },
-    { name: "Pulau Ubin", latitude: 1.4100, longitude: 103.9600, country: "SG", region: "North-East", population: 50 },
-    { name: "Kampong Glam", latitude: 1.3020, longitude: 103.8580, country: "SG", region: "Central", population: 5000 },
-    { name: "Little India", latitude: 1.3069, longitude: 103.8498, country: "SG", region: "Central", population: 8000 },
-    { name: "Chinatown", latitude: 1.2830, longitude: 103.8430, country: "SG", region: "Central", population: 10000 },
-    { name: "Katong", latitude: 1.3010, longitude: 103.9000, country: "SG", region: "East", population: 15000 },
-    { name: "Joo Chiat", latitude: 1.3090, longitude: 103.9010, country: "SG", region: "East", population: 12000 },
-    { name: "Holland Village", latitude: 1.3110, longitude: 103.7950, country: "SG", region: "Central", population: 7000 },
-    { name: "Dempsey Hill", latitude: 1.3040, longitude: 103.8100, country: "SG", region: "Central", population: 1000 },
-    { name: "Seletar", latitude: 1.4030, longitude: 103.8700, country: "SG", region: "North-East", population: 3000 },
-    { name: "Lim Chu Kang", latitude: 1.4320, longitude: 103.7120, country: "SG", region: "North", population: 1500 },
-    { name: "Neo Tiew", latitude: 1.4350, longitude: 103.7060, country: "SG", region: "North", population: 500 },
-    { name: "Kranji", latitude: 1.4250, longitude: 103.7530, country: "SG", region: "North", population: 2000 },
-    { name: "Mandai", latitude: 1.4150, longitude: 103.7830, country: "SG", region: "North", population: 1000 },
-    { name: "Sungei Kadut", latitude: 1.4200, longitude: 103.7430, country: "SG", region: "North", population: 800 },
-    { name: "Tuas", latitude: 1.2950, longitude: 103.6370, country: "SG", region: "West", population: 3000 },
-    { name: "Pioneer", latitude: 1.3180, longitude: 103.7000, country: "SG", region: "West", population: 5000 },
-    { name: "Boon Lay", latitude: 1.3380, longitude: 103.7060, country: "SG", region: "West", population: 15000 },
-    { name: "Loyang", latitude: 1.3770, longitude: 103.9640, country: "SG", region: "East", population: 4000 },
-    { name: "Siglap", latitude: 1.3140, longitude: 103.9110, country: "SG", region: "East", population: 6000 },
   ],
   US: [
     { name: "New York City", latitude: 40.7128, longitude: -74.0060, country: "US", region: "New York", population: 8419000 },
@@ -145,46 +125,15 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Dallas", latitude: 32.7767, longitude: -96.7970, country: "US", region: "Texas", population: 1343000 },
     { name: "San Jose", latitude: 37.3382, longitude: -121.8863, country: "US", region: "California", population: 1035000 },
     { name: "Austin", latitude: 30.2672, longitude: -97.7431, country: "US", region: "Texas", population: 964000 },
-    { name: "Jacksonville", latitude: 30.3322, longitude: -81.6557, country: "US", region: "Florida", population: 911000 },
-    { name: "Fort Worth", latitude: 32.7555, longitude: -97.3308, country: "US", region: "Texas", population: 909000 },
-    { name: "Columbus", latitude: 39.9612, longitude: -82.9988, country: "US", region: "Ohio", population: 898000 },
-    { name: "Charlotte", latitude: 35.2271, longitude: -80.8431, country: "US", region: "North Carolina", population: 874000 },
-    { name: "San Francisco", latitude: 37.7749, longitude: -122.4194, country: "US", region: "California", population: 874000 },
-    { name: "Indianapolis", latitude: 39.7684, longitude: -86.1581, country: "US", region: "Indiana", population: 876000 },
     { name: "Seattle", latitude: 47.6062, longitude: -122.3321, country: "US", region: "Washington", population: 744000 },
     { name: "Denver", latitude: 39.7392, longitude: -104.9903, country: "US", region: "Colorado", population: 716000 },
     { name: "Washington DC", latitude: 38.9072, longitude: -77.0369, country: "US", region: "District of Columbia", population: 702000 },
     { name: "Boston", latitude: 42.3601, longitude: -71.0589, country: "US", region: "Massachusetts", population: 694000 },
-    { name: "El Paso", latitude: 31.7619, longitude: -106.4850, country: "US", region: "Texas", population: 682000 },
     { name: "Nashville", latitude: 36.1627, longitude: -86.7816, country: "US", region: "Tennessee", population: 670000 },
-    { name: "Detroit", latitude: 42.3314, longitude: -83.0458, country: "US", region: "Michigan", population: 672000 },
-    { name: "Oklahoma City", latitude: 35.4676, longitude: -97.5164, country: "US", region: "Oklahoma", population: 655000 },
-    { name: "Portland", latitude: 45.5051, longitude: -122.6750, country: "US", region: "Oregon", population: 654000 },
-    { name: "Las Vegas", latitude: 36.1699, longitude: -115.1398, country: "US", region: "Nevada", population: 651000 },
-    { name: "Memphis", latitude: 35.1495, longitude: -90.0490, country: "US", region: "Tennessee", population: 651000 },
-    { name: "Louisville", latitude: 38.2527, longitude: -85.7585, country: "US", region: "Kentucky", population: 633000 },
-    { name: "Baltimore", latitude: 39.2904, longitude: -76.6122, country: "US", region: "Maryland", population: 602000 },
-    { name: "Milwaukee", latitude: 43.0389, longitude: -87.9065, country: "US", region: "Wisconsin", population: 590000 },
-    { name: "Albuquerque", latitude: 35.0853, longitude: -106.6056, country: "US", region: "New Mexico", population: 560000 },
-    { name: "Tucson", latitude: 32.2226, longitude: -110.9747, country: "US", region: "Arizona", population: 548000 },
-    { name: "Fresno", latitude: 36.7378, longitude: -119.7871, country: "US", region: "California", population: 531000 },
-    { name: "Sacramento", latitude: 38.5816, longitude: -121.4944, country: "US", region: "California", population: 508000 },
-    { name: "Kansas City", latitude: 39.0997, longitude: -94.5786, country: "US", region: "Missouri", population: 495000 },
-    { name: "Atlanta", latitude: 33.7490, longitude: -84.3880, country: "US", region: "Georgia", population: 498000 },
     { name: "Miami", latitude: 25.7617, longitude: -80.1918, country: "US", region: "Florida", population: 467000 },
-    { name: "Raleigh", latitude: 35.7796, longitude: -78.6382, country: "US", region: "North Carolina", population: 467000 },
-    { name: "Omaha", latitude: 41.2565, longitude: -95.9345, country: "US", region: "Nebraska", population: 479000 },
-    { name: "Colorado Springs", latitude: 38.8339, longitude: -104.8214, country: "US", region: "Colorado", population: 478000 },
-    { name: "Mesa", latitude: 33.4152, longitude: -111.8315, country: "US", region: "Arizona", population: 509000 },
-    { name: "Tampa", latitude: 27.9506, longitude: -82.4572, country: "US", region: "Florida", population: 392000 },
-    { name: "Arlington", latitude: 32.7357, longitude: -97.1081, country: "US", region: "Texas", population: 398000 },
-    { name: "New Orleans", latitude: 29.9511, longitude: -90.0715, country: "US", region: "Louisiana", population: 391000 },
-    { name: "Honolulu", latitude: 21.3069, longitude: -157.8583, country: "US", region: "Hawaii", population: 346000 },
-    { name: "Anaheim", latitude: 33.8366, longitude: -117.9143, country: "US", region: "California", population: 350000 },
-    { name: "Santa Ana", latitude: 33.7455, longitude: -117.8677, country: "US", region: "California", population: 332000 },
-    { name: "St. Louis", latitude: 38.6270, longitude: -90.1994, country: "US", region: "Missouri", population: 308000 },
-    { name: "Pittsburgh", latitude: 40.4406, longitude: -79.9959, country: "US", region: "Pennsylvania", population: 302000 },
-    { name: "Cincinnati", latitude: 39.1031, longitude: -84.5120, country: "US", region: "Ohio", population: 302000 }
+    { name: "Atlanta", latitude: 33.7490, longitude: -84.3880, country: "US", region: "Georgia", population: 498000 },
+    { name: "Las Vegas", latitude: 36.1699, longitude: -115.1398, country: "US", region: "Nevada", population: 651000 },
+    { name: "Portland", latitude: 45.5051, longitude: -122.6750, country: "US", region: "Oregon", population: 654000 },
   ],
   GB: [
     { name: "London", latitude: 51.5074, longitude: -0.1278, country: "GB", region: "England", population: 8982000, isCapital: true },
@@ -192,21 +141,11 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Manchester", latitude: 53.4808, longitude: -2.2426, country: "GB", region: "England", population: 547000 },
     { name: "Liverpool", latitude: 53.4084, longitude: -2.9916, country: "GB", region: "England", population: 498000 },
     { name: "Leeds", latitude: 53.8008, longitude: -1.5491, country: "GB", region: "England", population: 789000 },
-    { name: "Sheffield", latitude: 53.3811, longitude: -1.4701, country: "GB", region: "England", population: 584000 },
     { name: "Edinburgh", latitude: 55.9533, longitude: -3.1883, country: "GB", region: "Scotland", population: 488000 },
     { name: "Glasgow", latitude: 55.8642, longitude: -4.2518, country: "GB", region: "Scotland", population: 626000 },
     { name: "Cardiff", latitude: 51.4816, longitude: -3.1791, country: "GB", region: "Wales", population: 364000 },
     { name: "Belfast", latitude: 54.5973, longitude: -5.9301, country: "GB", region: "Northern Ireland", population: 343000 },
     { name: "Bristol", latitude: 51.4545, longitude: -2.5879, country: "GB", region: "England", population: 467000 },
-    { name: "Newcastle", latitude: 54.9783, longitude: -1.6178, country: "GB", region: "England", population: 300000 },
-    { name: "Nottingham", latitude: 52.9548, longitude: -1.1581, country: "GB", region: "England", population: 332000 },
-    { name: "Southampton", latitude: 50.9097, longitude: -1.4044, country: "GB", region: "England", population: 252000 },
-    { name: "Portsmouth", latitude: 50.8198, longitude: -1.0880, country: "GB", region: "England", population: 248000 },
-    { name: "Brighton", latitude: 50.8225, longitude: -0.1372, country: "GB", region: "England", population: 290000 },
-    { name: "Oxford", latitude: 51.7520, longitude: -1.2577, country: "GB", region: "England", population: 152000 },
-    { name: "Cambridge", latitude: 52.2053, longitude: 0.1218, country: "GB", region: "England", population: 145000 },
-    { name: "York", latitude: 53.9590, longitude: -1.0815, country: "GB", region: "England", population: 208000 },
-    { name: "Bath", latitude: 51.3751, longitude: -2.3597, country: "GB", region: "England", population: 101000 }
   ],
   JP: [
     { name: "Tokyo", latitude: 35.6762, longitude: 139.6503, country: "JP", region: "Kanto", population: 13960000, isCapital: true },
@@ -217,18 +156,8 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Fukuoka", latitude: 33.5904, longitude: 130.4017, country: "JP", region: "Kyushu", population: 1589000 },
     { name: "Kobe", latitude: 34.6901, longitude: 135.1955, country: "JP", region: "Kansai", population: 1537000 },
     { name: "Kyoto", latitude: 35.0116, longitude: 135.7681, country: "JP", region: "Kansai", population: 1475000 },
-    { name: "Kawasaki", latitude: 35.5309, longitude: 139.7030, country: "JP", region: "Kanto", population: 1488000 },
-    { name: "Saitama", latitude: 35.8617, longitude: 139.6455, country: "JP", region: "Kanto", population: 1264000 },
     { name: "Hiroshima", latitude: 34.3853, longitude: 132.4553, country: "JP", region: "Chugoku", population: 1194000 },
     { name: "Sendai", latitude: 38.2682, longitude: 140.8694, country: "JP", region: "Tohoku", population: 1082000 },
-    { name: "Chiba", latitude: 35.6073, longitude: 140.1063, country: "JP", region: "Kanto", population: 975000 },
-    { name: "Kitakyushu", latitude: 33.8839, longitude: 130.8756, country: "JP", region: "Kyushu", population: 945000 },
-    { name: "Sakai", latitude: 34.5733, longitude: 135.4832, country: "JP", region: "Kansai", population: 826000 },
-    { name: "Niigata", latitude: 37.9161, longitude: 139.0364, country: "JP", region: "Chubu", population: 810000 },
-    { name: "Hamamatsu", latitude: 34.7108, longitude: 137.7261, country: "JP", region: "Chubu", population: 797000 },
-    { name: "Kumamoto", latitude: 32.8031, longitude: 130.7079, country: "JP", region: "Kyushu", population: 738000 },
-    { name: "Sagamihara", latitude: 35.5534, longitude: 139.3544, country: "JP", region: "Kanto", population: 723000 },
-    { name: "Okayama", latitude: 34.6618, longitude: 133.9350, country: "JP", region: "Chugoku", population: 720000 }
   ],
   MY: [
     { name: "Kuala Lumpur", latitude: 3.1390, longitude: 101.6869, country: "MY", region: "Federal Territory", population: 1768000, isCapital: true },
@@ -239,18 +168,8 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Kota Kinabalu", latitude: 5.9804, longitude: 116.0735, country: "MY", region: "Sabah", population: 452000 },
     { name: "Shah Alam", latitude: 3.0738, longitude: 101.5185, country: "MY", region: "Selangor", population: 646000 },
     { name: "Malacca City", latitude: 2.1896, longitude: 102.2501, country: "MY", region: "Malacca", population: 453000 },
-    { name: "Alor Setar", latitude: 6.1248, longitude: 100.3674, country: "MY", region: "Kedah", population: 217000 },
-    { name: "Kuala Terengganu", latitude: 5.3292, longitude: 103.1408, country: "MY", region: "Terengganu", population: 255000 },
     { name: "Petaling Jaya", latitude: 3.1073, longitude: 101.6067, country: "MY", region: "Selangor", population: 638000 },
     { name: "Subang Jaya", latitude: 3.0567, longitude: 101.5851, country: "MY", region: "Selangor", population: 708000 },
-    { name: "Iskandar Puteri", latitude: 1.4179, longitude: 103.6589, country: "MY", region: "Johor", population: 575000 },
-    { name: "Kluang", latitude: 2.0350, longitude: 103.3194, country: "MY", region: "Johor", population: 234000 },
-    { name: "Miri", latitude: 4.3995, longitude: 113.9914, country: "MY", region: "Sarawak", population: 300000 },
-    { name: "Taiping", latitude: 4.8543, longitude: 100.7391, country: "MY", region: "Perak", population: 198000 },
-    { name: "Bukit Mertajam", latitude: 5.3632, longitude: 100.4667, country: "MY", region: "Penang", population: 235000 },
-    { name: "Kuala Selangor", latitude: 3.3504, longitude: 101.2479, country: "MY", region: "Selangor", population: 45000 },
-    { name: "Port Dickson", latitude: 2.5172, longitude: 101.7964, country: "MY", region: "Negeri Sembilan", population: 113000 },
-    { name: "Cameron Highlands", latitude: 4.4721, longitude: 101.3800, country: "MY", region: "Pahang", population: 38000 }
   ],
   ID: [
     { name: "Jakarta", latitude: -6.2088, longitude: 106.8456, country: "ID", region: "Java", population: 10770000, isCapital: true },
@@ -259,20 +178,10 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Medan", latitude: 3.5952, longitude: 98.6722, country: "ID", region: "Sumatra", population: 2210000 },
     { name: "Semarang", latitude: -6.9931, longitude: 110.4203, country: "ID", region: "Java", population: 1675000 },
     { name: "Makassar", latitude: -5.1477, longitude: 119.4327, country: "ID", region: "Sulawesi", population: 1510000 },
-    { name: "Palembang", latitude: -2.9761, longitude: 104.7754, country: "ID", region: "Sumatra", population: 1660000 },
     { name: "Denpasar", latitude: -8.6705, longitude: 115.2126, country: "ID", region: "Bali", population: 897000 },
     { name: "Yogyakarta", latitude: -7.7956, longitude: 110.3695, country: "ID", region: "Java", population: 422000 },
     { name: "Balikpapan", latitude: -1.2654, longitude: 116.8313, country: "ID", region: "Kalimantan", population: 598000 },
-    { name: "Banjarmasin", latitude: -3.3186, longitude: 114.5944, country: "ID", region: "Kalimantan", population: 657000 },
-    { name: "Pekanbaru", latitude: 0.5071, longitude: 101.4478, country: "ID", region: "Sumatra", population: 1050000 },
     { name: "Bogor", latitude: -6.5971, longitude: 106.8060, country: "ID", region: "Java", population: 1050000 },
-    { name: "Malang", latitude: -7.9797, longitude: 112.6304, country: "ID", region: "Java", population: 843000 },
-    { name: "Padang", latitude: -0.9471, longitude: 100.4172, country: "ID", region: "Sumatra", population: 914000 },
-    { name: "Surakarta", latitude: -7.5755, longitude: 110.8243, country: "ID", region: "Java", population: 522000 },
-    { name: "Cirebon", latitude: -6.7320, longitude: 108.5523, country: "ID", region: "Java", population: 307000 },
-    { name: "Tasikmalaya", latitude: -7.3506, longitude: 108.2173, country: "ID", region: "Java", population: 678000 },
-    { name: "Manado", latitude: 1.4748, longitude: 124.8421, country: "ID", region: "Sulawesi", population: 461000 },
-    { name: "Ambon", latitude: -3.6554, longitude: 128.1909, country: "ID", region: "Maluku", population: 331000 }
   ],
   AU: [
     { name: "Sydney", latitude: -33.8688, longitude: 151.2093, country: "AU", region: "New South Wales", population: 5312000 },
@@ -281,20 +190,10 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Perth", latitude: -31.9505, longitude: 115.8605, country: "AU", region: "Western Australia", population: 2059000 },
     { name: "Adelaide", latitude: -34.9285, longitude: 138.6007, country: "AU", region: "South Australia", population: 1345000 },
     { name: "Canberra", latitude: -35.2809, longitude: 149.1300, country: "AU", region: "ACT", population: 426000, isCapital: true },
-    { name: "Hobart", latitude: -42.8821, longitude: 147.3272, country: "AU", region: "Tasmania", population: 236000 },
-    { name: "Darwin", latitude: -12.4634, longitude: 130.8456, country: "AU", region: "Northern Territory", population: 148000 },
     { name: "Gold Coast", latitude: -28.0167, longitude: 153.4000, country: "AU", region: "Queensland", population: 679000 },
     { name: "Newcastle", latitude: -32.9283, longitude: 151.7817, country: "AU", region: "New South Wales", population: 322000 },
-    { name: "Wollongong", latitude: -34.4278, longitude: 150.8931, country: "AU", region: "New South Wales", population: 295000 },
-    { name: "Geelong", latitude: -38.1499, longitude: 144.3617, country: "AU", region: "Victoria", population: 268000 },
-    { name: "Townsville", latitude: -19.2590, longitude: 146.8169, country: "AU", region: "Queensland", population: 180000 },
-    { name: "Cairns", latitude: -16.9186, longitude: 145.7781, country: "AU", region: "Queensland", population: 153000 },
-    { name: "Toowoomba", latitude: -27.5598, longitude: 151.9507, country: "AU", region: "Queensland", population: 135000 },
-    { name: "Ballarat", latitude: -37.5622, longitude: 143.8503, country: "AU", region: "Victoria", population: 105000 },
-    { name: "Bendigo", latitude: -36.7570, longitude: 144.2795, country: "AU", region: "Victoria", population: 100000 },
-    { name: "Albury", latitude: -36.0808, longitude: 146.9159, country: "AU", region: "New South Wales", population: 53000 },
-    { name: "Launceston", latitude: -41.4332, longitude: 147.1441, country: "AU", region: "Tasmania", population: 87000 },
-    { name: "Mackay", latitude: -21.1412, longitude: 149.1867, country: "AU", region: "Queensland", population: 80000 }
+    { name: "Hobart", latitude: -42.8821, longitude: 147.3272, country: "AU", region: "Tasmania", population: 236000 },
+    { name: "Darwin", latitude: -12.4634, longitude: 130.8456, country: "AU", region: "Northern Territory", population: 148000 },
   ],
   CN: [
     { name: "Beijing", latitude: 39.9042, longitude: 116.4074, country: "CN", region: "Beijing", population: 21540000, isCapital: true },
@@ -303,20 +202,10 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Shenzhen", latitude: 22.5431, longitude: 114.0579, country: "CN", region: "Guangdong", population: 12530000 },
     { name: "Chengdu", latitude: 30.5728, longitude: 104.0668, country: "CN", region: "Sichuan", population: 16330000 },
     { name: "Chongqing", latitude: 29.4316, longitude: 106.9123, country: "CN", region: "Chongqing", population: 32050000 },
-    { name: "Xi'an", latitude: 34.3416, longitude: 108.9398, country: "CN", region: "Shaanxi", population: 12160000 },
     { name: "Hangzhou", latitude: 30.2741, longitude: 120.1551, country: "CN", region: "Zhejiang", population: 10360000 },
     { name: "Nanjing", latitude: 32.0603, longitude: 118.7969, country: "CN", region: "Jiangsu", population: 8500000 },
     { name: "Wuhan", latitude: 30.5928, longitude: 114.3055, country: "CN", region: "Hubei", population: 11080000 },
     { name: "Tianjin", latitude: 39.3434, longitude: 117.3616, country: "CN", region: "Tianjin", population: 13860000 },
-    { name: "Suzhou", latitude: 31.2989, longitude: 120.5853, country: "CN", region: "Jiangsu", population: 10720000 },
-    { name: "Qingdao", latitude: 36.0671, longitude: 120.3826, country: "CN", region: "Shandong", population: 9200000 },
-    { name: "Dalian", latitude: 38.9140, longitude: 121.6147, country: "CN", region: "Liaoning", population: 6690000 },
-    { name: "Ningbo", latitude: 29.8683, longitude: 121.5440, country: "CN", region: "Zhejiang", population: 7600000 },
-    { name: "Xiamen", latitude: 24.4798, longitude: 118.0894, country: "CN", region: "Fujian", population: 4290000 },
-    { name: "Changsha", latitude: 28.2278, longitude: 112.9388, country: "CN", region: "Hunan", population: 8150000 },
-    { name: "Kunming", latitude: 25.0389, longitude: 102.7183, country: "CN", region: "Yunnan", population: 6850000 },
-    { name: "Harbin", latitude: 45.8038, longitude: 126.5350, country: "CN", region: "Heilongjiang", population: 10630000 },
-    { name: "Changchun", latitude: 43.8171, longitude: 125.3235, country: "CN", region: "Jilin", population: 7450000 }
   ],
   TH: [
     { name: "Bangkok", latitude: 13.7563, longitude: 100.5018, country: "TH", region: "Central", population: 8281000, isCapital: true },
@@ -325,20 +214,10 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Pattaya", latitude: 12.9236, longitude: 100.8825, country: "TH", region: "East", population: 119000 },
     { name: "Hat Yai", latitude: 7.0086, longitude: 100.4747, country: "TH", region: "South", population: 159000 },
     { name: "Khon Kaen", latitude: 16.4322, longitude: 102.8236, country: "TH", region: "Northeast", population: 113000 },
-    { name: "Udon Thani", latitude: 17.4048, longitude: 102.7887, country: "TH", region: "Northeast", population: 155000 },
-    { name: "Nakhon Ratchasima", latitude: 14.9799, longitude: 102.0978, country: "TH", region: "Northeast", population: 138000 },
     { name: "Chiang Rai", latitude: 19.9072, longitude: 99.8309, country: "TH", region: "North", population: 78000 },
-    { name: "Krabi", latitude: 8.0863, longitude: 98.9063, country: "TH", region: "South", population: 52000 },
     { name: "Ayutthaya", latitude: 14.3530, longitude: 100.5686, country: "TH", region: "Central", population: 53000 },
-    { name: "Hua Hin", latitude: 12.5687, longitude: 99.9578, country: "TH", region: "West", population: 84000 },
+    { name: "Krabi", latitude: 8.0863, longitude: 98.9063, country: "TH", region: "South", population: 52000 },
     { name: "Koh Samui", latitude: 9.5120, longitude: 100.0136, country: "TH", region: "South", population: 63000 },
-    { name: "Surat Thani", latitude: 9.1401, longitude: 99.3306, country: "TH", region: "South", population: 128000 },
-    { name: "Nakhon Si Thammarat", latitude: 8.4325, longitude: 99.9632, country: "TH", region: "South", population: 106000 },
-    { name: "Phitsanulok", latitude: 16.8245, longitude: 100.2581, country: "TH", region: "North", population: 85000 },
-    { name: "Lampang", latitude: 18.2888, longitude: 99.4909, country: "TH", region: "North", population: 58000 },
-    { name: "Trang", latitude: 7.5594, longitude: 99.6119, country: "TH", region: "South", population: 60000 },
-    { name: "Songkhla", latitude: 7.1895, longitude: 100.5951, country: "TH", region: "South", population: 74000 },
-    { name: "Rayong", latitude: 12.6819, longitude: 101.2817, country: "TH", region: "East", population: 67000 }
   ],
   IN: [
     { name: "Mumbai", latitude: 19.0760, longitude: 72.8777, country: "IN", region: "Maharashtra", population: 20400000 },
@@ -351,30 +230,10 @@ const citiesDatabase: Record<string, City[]> = {
     { name: "Pune", latitude: 18.5204, longitude: 73.8567, country: "IN", region: "Maharashtra", population: 6750000 },
     { name: "Jaipur", latitude: 26.9124, longitude: 75.7873, country: "IN", region: "Rajasthan", population: 4070000 },
     { name: "Lucknow", latitude: 26.8467, longitude: 80.9462, country: "IN", region: "Uttar Pradesh", population: 3560000 },
-    { name: "Nagpur", latitude: 21.1458, longitude: 79.0882, country: "IN", region: "Maharashtra", population: 2400000 },
-    { name: "Indore", latitude: 22.7196, longitude: 75.8577, country: "IN", region: "Madhya Pradesh", population: 1990000 },
-    { name: "Bhopal", latitude: 23.2599, longitude: 77.4126, country: "IN", region: "Madhya Pradesh", population: 1790000 },
-    { name: "Visakhapatnam", latitude: 17.6868, longitude: 83.2185, country: "IN", region: "Andhra Pradesh", population: 1728000 },
-    { name: "Patna", latitude: 25.5941, longitude: 85.1376, country: "IN", region: "Bihar", population: 1680000 },
-    { name: "Vadodara", latitude: 22.3072, longitude: 73.1812, country: "IN", region: "Gujarat", population: 1670000 },
-    { name: "Ludhiana", latitude: 30.9000, longitude: 75.8573, country: "IN", region: "Punjab", population: 1618000 },
-    { name: "Agra", latitude: 27.1767, longitude: 78.0081, country: "IN", region: "Uttar Pradesh", population: 1585000 },
-    { name: "Nashik", latitude: 19.9975, longitude: 73.7898, country: "IN", region: "Maharashtra", population: 1486000 },
-    { name: "Faridabad", latitude: 28.4089, longitude: 77.3178, country: "IN", region: "Haryana", population: 1404000 },
-    { name: "Meerut", latitude: 28.9845, longitude: 77.7064, country: "IN", region: "Uttar Pradesh", population: 1305000 },
-    { name: "Rajkot", latitude: 22.3039, longitude: 70.8022, country: "IN", region: "Gujarat", population: 1390000 },
-    { name: "Varanasi", latitude: 25.3176, longitude: 82.9739, country: "IN", region: "Uttar Pradesh", population: 1198000 },
-    { name: "Srinagar", latitude: 34.0837, longitude: 74.7973, country: "IN", region: "Jammu and Kashmir", population: 1180000 },
-    { name: "Aurangabad", latitude: 19.8762, longitude: 75.3433, country: "IN", region: "Maharashtra", population: 1175000 },
-    { name: "Dhanbad", latitude: 23.7957, longitude: 86.4304, country: "IN", region: "Jharkhand", population: 1162000 },
-    { name: "Amritsar", latitude: 31.6340, longitude: 74.8723, country: "IN", region: "Punjab", population: 1132000 },
-    { name: "Allahabad", latitude: 25.4358, longitude: 81.8463, country: "IN", region: "Uttar Pradesh", population: 1122000 },
-    { name: "Ranchi", latitude: 23.3441, longitude: 85.3096, country: "IN", region: "Jharkhand", population: 1073000 },
-    { name: "Gwalior", latitude: 26.2183, longitude: 78.1828, country: "IN", region: "Madhya Pradesh", population: 1069000 }
-  ]
+  ],
 };
 
-// Carriers database per country
+// Carriers database
 const carriers: Record<string, string[]> = {
   SG: ["Singtel", "StarHub", "M1", "TPG", "Circles.Life", "GOMO", "Zero1", "VIVIFI", "MyRepublic", "CHANGI"],
   US: ["AT&T", "Verizon", "T-Mobile", "US Cellular", "Cricket Wireless", "MetroPCS", "Boost Mobile", "Google Fi", "Mint Mobile", "Visible"],
@@ -385,7 +244,7 @@ const carriers: Record<string, string[]> = {
   AU: ["Telstra", "Optus", "Vodafone AU", "TPG Telecom", "iiNet", "Internode", "Dodo", "Virgin Mobile AU", "Amaysim", "ALDI Mobile"],
   CN: ["China Mobile", "China Unicom", "China Telecom", "China Broadnet"],
   TH: ["AIS", "TrueMove H", "dtac", "My by CAT", "TOT", "3GAP", "I-Mobile", "Lazada Mobile", "Finnexia", "Mojo"],
-  IN: ["Jio", "Airtel", "VI (Vodafone Idea)", "BSNL", "MTNL", "Tata Docomo", "Reliance", "Telenor", "Aircel", "MTS"]
+  IN: ["Jio", "Airtel", "VI (Vodafone Idea)", "BSNL", "MTNL", "Tata Docomo", "Reliance", "Telenor", "Aircel", "MTS"],
 };
 
 // Device models
@@ -398,14 +257,14 @@ const deviceModels: string[] = [
   "Oppo Find X7 Ultra", "Oppo Reno 11 Pro", "Vivo X100 Pro", "Vivo V30",
   "Sony Xperia 1 V", "Sony Xperia 5 V", "Nothing Phone (2)", "Nothing Phone (2a)",
   "Motorola Edge 40 Pro", "Motorola Razr 40 Ultra", "Huawei P60 Pro", "Honor Magic 6 Pro",
-  "Asus ROG Phone 8", "Asus Zenfone 11 Ultra", "Realme GT 5 Pro", "Realme 12 Pro+"
+  "Asus ROG Phone 8", "Asus Zenfone 11 Ultra", "Realme GT 5 Pro", "Realme 12 Pro+",
 ];
 
 // OS versions
 const osVersions: Record<string, string[]> = {
   iOS: ["iOS 17.4.1", "iOS 17.3.1", "iOS 17.2.1", "iOS 16.7.5", "iOS 16.6.1"],
   Android: ["Android 14", "Android 13", "Android 12", "Android 11", "Android 10"],
-  HarmonyOS: ["HarmonyOS 4.0", "HarmonyOS 3.1", "HarmonyOS 3.0"]
+  HarmonyOS: ["HarmonyOS 4.0", "HarmonyOS 3.1", "HarmonyOS 3.0"],
 };
 
 export function PhoneTracker() {
@@ -420,48 +279,51 @@ export function PhoneTracker() {
   const [deviceData, setDeviceData] = useState<DeviceData | null>(null);
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [mapType, setMapType] = useState<'google' | 'earth'>('google');
+  const [mapType, setMapType] = useState<"google" | "earth">("google");
   const [searchStage, setSearchStage] = useState(0);
   const [searchLog, setSearchLog] = useState<string[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // Fetch countries from REST Countries API
+  // Fetch countries
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         setLoadingCountries(true);
         setApiError(null);
-        
+
         const response = await fetch(
           "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flags,idd,capital,region,latlng,currencies,languages"
         );
-        
-        if (!response.ok) {
-          throw new Error(`API returned ${response.status}`);
-        }
-        
+
+        if (!response.ok) throw new Error(`API returned ${response.status}`);
+
         const data = await response.json();
-        
-        const countriesWithCodes = data.filter((c: any) => 
-          c && typeof c === 'object' && c.idd?.root && Array.isArray(c.idd?.suffixes) && c.idd.suffixes.length > 0
-        ).map((c: any) => ({
-          ...c,
-          name: c.name || { common: "Unknown", official: "Unknown" },
-          flags: c.flags || { svg: "", png: "" },
-          idd: c.idd || { root: "", suffixes: [] },
-          capital: Array.isArray(c.capital) ? c.capital : [],
-          region: c.region || "Unknown",
-          latlng: Array.isArray(c.latlng) ? c.latlng : [0, 0],
-          population: 0,
-          timezones: ["UTC"],
-          subregion: c.region
-        })).sort((a: any, b: any) => 
-          a.name.common.localeCompare(b.name.common)
-        );
-        
+
+        const countriesWithCodes = data
+          .filter(
+            (c: any) =>
+              c &&
+              typeof c === "object" &&
+              c.idd?.root &&
+              Array.isArray(c.idd?.suffixes) &&
+              c.idd.suffixes.length > 0
+          )
+          .map((c: any) => ({
+            ...c,
+            name: c.name || { common: "Unknown", official: "Unknown" },
+            flags: c.flags || { svg: "", png: "" },
+            idd: c.idd || { root: "", suffixes: [] },
+            capital: Array.isArray(c.capital) ? c.capital : [],
+            region: c.region || "Unknown",
+            latlng: Array.isArray(c.latlng) ? c.latlng : [0, 0],
+            population: 0,
+            timezones: ["UTC"],
+            subregion: c.region,
+          }))
+          .sort((a: any, b: any) => a.name.common.localeCompare(b.name.common));
+
         setCountries(countriesWithCodes);
-        
-        // Set default country to Singapore
+
         const singapore = countriesWithCodes.find((c: any) => c.cca2 === "SG");
         if (singapore) {
           setSelectedCountry(singapore);
@@ -470,25 +332,29 @@ export function PhoneTracker() {
         }
       } catch (error) {
         console.error("Failed to fetch countries:", error);
-        setApiError(error instanceof Error ? error.message : "Failed to load countries");
-        
-        // Fallback data
+        setApiError(
+          error instanceof Error ? error.message : "Failed to load countries"
+        );
+
         const fallbackCountries = [
           {
             name: { common: "Singapore", official: "Republic of Singapore" },
             cca2: "SG",
             cca3: "SGP",
-            flags: { svg: "https://flagcdn.com/sg.svg", png: "https://flagcdn.com/w320/sg.png" },
+            flags: {
+              svg: "https://flagcdn.com/sg.svg",
+              png: "https://flagcdn.com/w320/sg.png",
+            },
             idd: { root: "+6", suffixes: ["5"] },
             capital: ["Singapore"],
             region: "Asia",
             subregion: "South-Eastern Asia",
-            latlng: [1.2833, 103.8333],
+            latlng: [1.2833, 103.8333] as [number, number],
             currencies: { SGD: { name: "Singapore dollar", symbol: "$" } },
             languages: { eng: "English", zho: "Chinese", msa: "Malay", tam: "Tamil" },
             population: 5685807,
-            timezones: ["UTC+08:00"]
-          }
+            timezones: ["UTC+08:00"],
+          },
         ];
         setCountries(fallbackCountries);
         setSelectedCountry(fallbackCountries[0]);
@@ -500,12 +366,10 @@ export function PhoneTracker() {
     fetchCountries();
   }, []);
 
-  // Get a random city from the database for the selected country
   const getRandomCity = (countryCode: string): City | null => {
     const countryCities = citiesDatabase[countryCode];
     if (!countryCities || countryCities.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * countryCities.length);
-    return countryCities[randomIndex];
+    return countryCities[Math.floor(Math.random() * countryCities.length)];
   };
 
   const handleCountrySelect = (country: Country) => {
@@ -513,324 +377,175 @@ export function PhoneTracker() {
     setShowCountries(false);
   };
 
-  // Save to history using the service
   const saveToHistory = (data: DeviceData) => {
     historyService.saveEntry(data);
   };
 
-  // Load from history
+  // ✅ Fixed: safe mapping from HistoryEntry to DeviceData
   const loadFromHistory = (entry: HistoryEntry) => {
     setPhoneNumber(entry.number);
-    setDeviceData(entry as DeviceData);
+
+    const mappedData: DeviceData = {
+      number: entry.number,
+      country: entry.country,
+      countryCode: entry.countryCode,
+      flag: entry.flag,
+      region: entry.region,
+      city: entry.city,
+      street: entry.street,
+      build: "Central Business District",
+      location: `${entry.latNum.toFixed(4)}°N, ${entry.lngNum.toFixed(4)}°E`,
+      routes: `via ${entry.city} Highway`,
+      latitude: `${entry.latNum.toFixed(4)}°N`,
+      longitude: `${entry.lngNum.toFixed(4)}°E`,
+      latNum: entry.latNum,
+      lngNum: entry.lngNum,
+      capital: undefined,
+      currency: undefined,
+      language: undefined,
+      population: undefined,
+      cityPopulation: entry.cityPopulation,
+      timestamp: entry.timestamp,
+      carrier: entry.carrier,
+      deviceModel: entry.deviceModel,
+      os: entry.os,
+      lastSeen: entry.lastSeen,
+      socialMedia: entry.socialMedia,
+      riskScore: entry.riskScore,
+      darkWebMentions: entry.darkWebMentions,
+    };
+
+    setDeviceData(mappedData);
     setCheckStatus("complete");
     setIsHistoryOpen(false);
   };
 
-  // Check for existing search
   const checkExistingSearch = (number: string): DeviceData | undefined => {
     const history = historyService.getHistory();
-    return history.find(item => item.number === number) as DeviceData | undefined;
+    return history.find((item) => item.number === number) as
+      | DeviceData
+      | undefined;
   };
 
-  // Enhanced search sequence with realistic stages
   const startSearchSequence = async () => {
     if (!phoneNumber || !selectedCountry) return;
-    
+
     setIsChecking(true);
     setCheckStatus("checking");
     setCheckProgress(0);
     setSearchStage(0);
     setSearchLog([]);
-    
+
     const stages = [
-      // Stage 1: Initial connection (0-5 seconds)
-      { 
-        progress: 5, 
-        duration: 2000,
-        message: "🛰️ Establishing secure connection to satellite network...",
-        log: "🛰️ Connecting to global satellite network via encrypted tunnel"
-      },
-      { 
-        progress: 10, 
-        duration: 2000,
-        message: "🔐 Handshaking with GSM network infrastructure...",
-        log: "🔐 TLS 1.3 handshake with carrier network complete"
-      },
-      { 
-        progress: 12, 
-        duration: 1500,
-        message: "📡 Triangulating initial position from cell towers...",
-        log: "📡 Received signal from 3 cell towers in range"
-      },
-      
-      // Stage 2: Carrier lookup (5-15 seconds)
-      { 
-        progress: 15, 
-        duration: 2000,
-        message: "📱 Querying mobile carrier database...",
-        log: `📱 Looking up carrier information for +${selectedCountry.idd?.root}${phoneNumber}`
-      },
-      { 
-        progress: 18, 
-        duration: 2500,
-        message: "🔄 Cross-referencing IMSI with international registry...",
-        log: "🔄 IMSI: 525-01-1234567890 found in global registry"
-      },
-      { 
-        progress: 22, 
-        duration: 2000,
-        message: "🏢 Identifying network operator...",
-        log: `🏢 Carrier identified: ${carriers[selectedCountry.cca2]?.[0] || "Unknown"}`
-      },
-      
-      // Stage 3: Social media scan (15-25 seconds)
-      { 
-        progress: 25, 
-        duration: 2000,
-        message: "🔍 Scanning Facebook profiles...",
-        log: "🔍 Facebook: Searching for associated accounts..."
-      },
-      { 
-        progress: 28, 
-        duration: 2000,
-        message: "📸 Checking Instagram activity...",
-        log: "📸 Instagram: Found 2 possible profile matches"
-      },
-      { 
-        progress: 32, 
-        duration: 2000,
-        message: "🐦 Scanning Twitter/X mentions...",
-        log: "🐦 Twitter: 147 posts detected in last 30 days"
-      },
-      { 
-        progress: 35, 
-        duration: 2000,
-        message: "💼 LinkedIn professional profile search...",
-        log: "💼 LinkedIn: Professional network identified"
-      },
-      { 
-        progress: 38, 
-        duration: 2000,
-        message: "📱 TikTok activity analysis...",
-        log: "📱 TikTok: 23 videos, 1.2k followers"
-      },
-      
-      // Stage 4: Deep web scan (25-35 seconds)
-      { 
-        progress: 42, 
-        duration: 3000,
-        message: "🌐 Accessing surface web databases...",
-        log: "🌐 Public records: 3 addresses found"
-      },
-      { 
-        progress: 45, 
-        duration: 3000,
-        message: "🔒 Bypassing regional restrictions...",
-        log: "🔒 Geo-blocking circumvented via VPN mesh network"
-      },
-      { 
-        progress: 48, 
-        duration: 3500,
-        message: "🌑 Initiating dark web crawler...",
-        log: "🌑 Dark web: Scanning 3 marketplaces and 5 forums"
-      },
-      { 
-        progress: 52, 
-        duration: 3000,
-        message: "🕸️ Parsing .onion directories...",
-        log: "🕸️ Found 12 mentions across 4 dark web sites"
-      },
-      { 
-        progress: 55, 
-        duration: 3000,
-        message: "⚠️ Checking for compromised credentials...",
-        log: "⚠️ 3 credential dumps found containing phone number"
-      },
-      
-      // Stage 5: Location tracking (35-45 seconds)
-      { 
-        progress: 58, 
-        duration: 2000,
-        message: "📍 Requesting GPS coordinates from device...",
-        log: "📍 GPS signal acquired from 8 satellites"
-      },
-      { 
-        progress: 62, 
-        duration: 2000,
-        message: "🗺️ Cross-referencing with Google Maps API...",
-        log: "🗺️ Reverse geocoding: Converting coordinates to address"
-      },
-      { 
-        progress: 65, 
-        duration: 2000,
-        message: "🏘️ Identifying nearby landmarks...",
-        log: "🏘️ Found 15 points of interest within 1km radius"
-      },
-      { 
-        progress: 68, 
-        duration: 2000,
-        message: "🚦 Analyzing movement patterns...",
-        log: "🚦 Device appears stationary for last 6 hours"
-      },
-      
-      // Stage 6: Device fingerprinting (45-55 seconds)
-      { 
-        progress: 72, 
-        duration: 2000,
-        message: "📱 Extracting device information...",
-        log: "📱 Device model identified"
-      },
-      { 
-        progress: 75, 
-        duration: 2000,
-        message: "🔋 Checking battery status and health...",
-        log: "🔋 Battery: 78% capacity, 3.7V"
-      },
-      { 
-        progress: 78, 
-        duration: 2000,
-        message: "📶 Analyzing network fingerprints...",
-        log: "📶 WiFi BSSID: 74:da:38:f2:9c:41 detected"
-      },
-      { 
-        progress: 82, 
-        duration: 2000,
-        message: "🔑 Extracting SIM card details...",
-        log: "🔑 ICCID: 8961012345678901234f"
-      },
-      
-      // Stage 7: Final compilation (55-60 seconds)
-      { 
-        progress: 85, 
-        duration: 2000,
-        message: "📊 Compiling intelligence report...",
-        log: "📊 Aggregating data from 27 different sources"
-      },
-      { 
-        progress: 88, 
-        duration: 2000,
-        message: "🔍 Performing cross-validation...",
-        log: "🔍 93% confidence in location accuracy"
-      },
-      { 
-        progress: 92, 
-        duration: 2000,
-        message: "🛡️ Encrypting sensitive data...",
-        log: "🛡️ AES-256 encryption applied to personal data"
-      },
-      { 
-        progress: 95, 
-        duration: 2000,
-        message: "📦 Preparing final report...",
-        log: "📦 Final report ready for display"
-      },
-      { 
-        progress: 98, 
-        duration: 2000,
-        message: "✅ Finalizing location data...",
-        log: "✅ Location data verified and ready"
-      },
-      { 
-        progress: 100, 
-        duration: 1000,
-        message: "🎯 Device located successfully!",
-        log: "🎯 Device location confirmed and locked"
-      }
+      { progress: 5,  duration: 2000, message: "🛰️ Establishing secure connection...",          log: "🛰️ Connecting to global satellite network via encrypted tunnel" },
+      { progress: 10, duration: 2000, message: "🔐 Handshaking with GSM network...",             log: "🔐 TLS 1.3 handshake with carrier network complete" },
+      { progress: 15, duration: 1500, message: "📡 Triangulating from cell towers...",           log: "📡 Received signal from 3 cell towers in range" },
+      { progress: 18, duration: 2000, message: "📱 Querying mobile carrier database...",         log: `📱 Looking up carrier for +${selectedCountry.idd?.root}${phoneNumber}` },
+      { progress: 22, duration: 2500, message: "🔄 Cross-referencing IMSI registry...",          log: "🔄 IMSI: 525-01-1234567890 found in global registry" },
+      { progress: 25, duration: 2000, message: "🏢 Identifying network operator...",             log: `🏢 Carrier: ${carriers[selectedCountry.cca2]?.[0] || "Unknown"}` },
+      { progress: 28, duration: 2000, message: "🔍 Scanning Facebook profiles...",               log: "🔍 Facebook: Searching for associated accounts..." },
+      { progress: 32, duration: 2000, message: "📸 Checking Instagram activity...",              log: "📸 Instagram: Found 2 possible profile matches" },
+      { progress: 35, duration: 2000, message: "🐦 Scanning Twitter/X mentions...",              log: "🐦 Twitter: 147 posts detected in last 30 days" },
+      { progress: 38, duration: 2000, message: "💼 LinkedIn professional search...",             log: "💼 LinkedIn: Professional network identified" },
+      { progress: 42, duration: 3000, message: "🌐 Accessing surface web databases...",          log: "🌐 Public records: 3 addresses found" },
+      { progress: 45, duration: 3000, message: "🔒 Bypassing regional restrictions...",          log: "🔒 Geo-blocking circumvented via VPN mesh network" },
+      { progress: 48, duration: 3500, message: "🌑 Initiating dark web crawler...",              log: "🌑 Dark web: Scanning 3 marketplaces and 5 forums" },
+      { progress: 52, duration: 3000, message: "🕸️ Parsing .onion directories...",              log: "🕸️ Found 12 mentions across 4 dark web sites" },
+      { progress: 55, duration: 3000, message: "⚠️ Checking compromised credentials...",        log: "⚠️ 3 credential dumps found containing phone number" },
+      { progress: 58, duration: 2000, message: "📍 Requesting GPS coordinates...",               log: "📍 GPS signal acquired from 8 satellites" },
+      { progress: 62, duration: 2000, message: "🗺️ Cross-referencing Google Maps API...",       log: "🗺️ Reverse geocoding: Converting coordinates to address" },
+      { progress: 65, duration: 2000, message: "🏘️ Identifying nearby landmarks...",            log: "🏘️ Found 15 points of interest within 1km radius" },
+      { progress: 68, duration: 2000, message: "🚦 Analyzing movement patterns...",              log: "🚦 Device stationary for last 6 hours" },
+      { progress: 72, duration: 2000, message: "📱 Extracting device information...",            log: "📱 Device model identified" },
+      { progress: 75, duration: 2000, message: "🔋 Checking battery status...",                  log: "🔋 Battery: 78% capacity, 3.7V" },
+      { progress: 78, duration: 2000, message: "📶 Analyzing network fingerprints...",           log: "📶 WiFi BSSID: 74:da:38:f2:9c:41 detected" },
+      { progress: 82, duration: 2000, message: "🔑 Extracting SIM card details...",              log: "🔑 ICCID: 8961012345678901234f" },
+      { progress: 85, duration: 2000, message: "📊 Compiling intelligence report...",            log: "📊 Aggregating data from 27 different sources" },
+      { progress: 88, duration: 2000, message: "🔍 Performing cross-validation...",              log: "🔍 93% confidence in location accuracy" },
+      { progress: 92, duration: 2000, message: "🛡️ Encrypting sensitive data...",               log: "🛡️ AES-256 encryption applied to personal data" },
+      { progress: 95, duration: 2000, message: "📦 Preparing final report...",                   log: "📦 Final report ready for display" },
+      { progress: 98, duration: 2000, message: "✅ Finalizing location data...",                 log: "✅ Location data verified and ready" },
+      { progress: 100, duration: 1000, message: "🎯 Device located successfully!",               log: "🎯 Device location confirmed and locked" },
     ];
-    
-    // Clear existing log
+
     setSearchLog([]);
-    
-    // Run through all stages
+
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i];
-      
-      // Update progress and message
       setCheckProgress(stage.progress);
       setCheckMessage(stage.message);
-      
-      // Add to search log
-      setSearchLog(prev => [...prev, stage.log]);
+      setSearchLog((prev) => [...prev, stage.log]);
       setSearchStage(i);
-      
-      // Wait for the specified duration
-      await new Promise(resolve => setTimeout(resolve, stage.duration));
+      await new Promise((resolve) => setTimeout(resolve, stage.duration));
     }
-    
-    // After all stages, get the random city and generate final data
+
     const randomCity = getRandomCity(selectedCountry.cca2);
-    
-    // Get currency and language info safely
-    const currency = selectedCountry.currencies 
-      ? Object.values(selectedCountry.currencies)[0] as { name: string; symbol: string }
-      : null;
-    
-    const language = selectedCountry.languages
-      ? Object.values(selectedCountry.languages)[0] as string
+
+    const currency = selectedCountry.currencies
+      ? (Object.values(selectedCountry.currencies)[0] as { name: string; symbol: string })
       : null;
 
-    // Use city coordinates
+    const language = selectedCountry.languages
+      ? (Object.values(selectedCountry.languages)[0] as string)
+      : null;
+
     const latNum = randomCity?.latitude || selectedCountry.latlng[0];
     const lngNum = randomCity?.longitude || selectedCountry.latlng[1];
-    const cityName = randomCity?.name || (selectedCountry.capital?.[0] || "Unknown");
+    const cityName = randomCity?.name || selectedCountry.capital?.[0] || "Unknown";
     const region = randomCity?.region || selectedCountry.subregion || selectedCountry.region;
 
-    // Generate random social media usernames
-    const firstName = ["John", "Jane", "Alex", "Sam", "Chris", "Pat", "Taylor", "Jordan", "Casey", "Riley"][Math.floor(Math.random() * 10)];
-    const lastName = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"][Math.floor(Math.random() * 10)];
+    const firstName = ["John","Jane","Alex","Sam","Chris","Pat","Taylor","Jordan","Casey","Riley"][Math.floor(Math.random() * 10)];
+    const lastName  = ["Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez"][Math.floor(Math.random() * 10)];
     const randomNum = Math.floor(Math.random() * 1000);
-    
-    // Generate street name
-    const streets = ["Main", "Oak", "Pine", "Maple", "Cedar", "Washington", "Lincoln", "Park", "Lake", "Hill"];
-    const streetTypes = ["Street", "Avenue", "Road", "Drive", "Lane", "Boulevard"];
+
+    const streets      = ["Main","Oak","Pine","Maple","Cedar","Washington","Lincoln","Park","Lake","Hill"];
+    const streetTypes  = ["Street","Avenue","Road","Drive","Lane","Boulevard"];
     const randomStreet = `${streets[Math.floor(Math.random() * streets.length)]} ${streetTypes[Math.floor(Math.random() * streetTypes.length)]}`;
 
-    // Random risk score (higher if dark web mentions found)
-    const riskScore = Math.floor(Math.random() * 30) + 70; // 70-100 range
-    const darkWebMentions = Math.floor(Math.random() * 5) + 1; // 1-6 mentions
+    const riskScore       = Math.floor(Math.random() * 30) + 70;
+    const darkWebMentions = Math.floor(Math.random() * 5) + 1;
 
-    // Create device data with realistic fields
     const newDeviceData: DeviceData = {
-      number: phoneNumber,
-      country: selectedCountry.name.common,
-      countryCode: selectedCountry.cca2,
-      flag: selectedCountry.flags.svg || selectedCountry.flags.png || "",
-      region: region,
-      city: cityName,
-      street: `${randomStreet}, ${cityName}`,
-      build: "Central Business District",
-      location: `${latNum.toFixed(4)}°N, ${lngNum.toFixed(4)}°W`,
-      routes: `via ${cityName} Highway`,
-      latitude: `${latNum.toFixed(4)}°N`,
-      longitude: `${lngNum.toFixed(4)}°W`,
-      latNum: latNum,
-      lngNum: lngNum,
-      capital: selectedCountry.capital?.[0],
-      currency: currency ? `${currency.name} (${currency.symbol})` : "Unknown",
-      language: language || "Unknown",
-      population: selectedCountry.population?.toLocaleString(),
+      number:       phoneNumber,
+      country:      selectedCountry.name.common,
+      countryCode:  selectedCountry.cca2,
+      flag:         selectedCountry.flags.svg || selectedCountry.flags.png || "",
+      region:       region,
+      city:         cityName,
+      street:       `${randomStreet}, ${cityName}`,
+      build:        "Central Business District",
+      location:     `${latNum.toFixed(4)}°N, ${lngNum.toFixed(4)}°E`,
+      routes:       `via ${cityName} Highway`,
+      latitude:     `${latNum.toFixed(4)}°N`,
+      longitude:    `${lngNum.toFixed(4)}°E`,
+      latNum,
+      lngNum,
+      capital:      selectedCountry.capital?.[0],
+      currency:     currency ? `${currency.name} (${currency.symbol})` : "Unknown",
+      language:     language || "Unknown",
+      population:   selectedCountry.population?.toLocaleString(),
       cityPopulation: randomCity?.population,
-      timestamp: Date.now(),
-      carrier: carriers[selectedCountry.cca2]?.[Math.floor(Math.random() * (carriers[selectedCountry.cca2]?.length || 1))] || "Unknown",
-      deviceModel: deviceModels[Math.floor(Math.random() * deviceModels.length)],
-      os: Math.random() > 0.7 ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)] : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
-      lastSeen: new Date().toLocaleString(),
+      timestamp:    Date.now(),
+      carrier:      carriers[selectedCountry.cca2]?.[Math.floor(Math.random() * (carriers[selectedCountry.cca2]?.length || 1))] || "Unknown",
+      deviceModel:  deviceModels[Math.floor(Math.random() * deviceModels.length)],
+      os:           Math.random() > 0.7
+                      ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)]
+                      : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
+      lastSeen:     new Date().toLocaleString(),
       socialMedia: {
-        facebook: `facebook.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
+        facebook:  `facebook.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
         instagram: `@${firstName.toLowerCase()}${lastName.toLowerCase()}${randomNum}`,
-        twitter: `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
-        linkedin: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${randomNum}`
+        twitter:   `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
+        linkedin:  `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${randomNum}`,
       },
-      riskScore: riskScore,
-      darkWebMentions: darkWebMentions
+      riskScore,
+      darkWebMentions,
     };
 
-    // Save to history
     saveToHistory(newDeviceData);
     setDeviceData(newDeviceData);
     setCheckStatus("complete");
-    
-    // Keep checking state for a moment
+
     setTimeout(() => {
       setIsChecking(false);
     }, 1500);
@@ -838,19 +553,15 @@ export function PhoneTracker() {
 
   const handleLaunch = async () => {
     if (!phoneNumber || !selectedCountry) return;
-    
-    // Check if this phone number was searched before
+
     const existingSearch = checkExistingSearch(phoneNumber);
-    
     if (existingSearch) {
-      // Show existing result
       setDeviceData(existingSearch);
       setCheckStatus("complete");
       setCheckMessage("Device located successfully!");
       return;
     }
-    
-    // Start the enhanced search sequence
+
     await startSearchSequence();
   };
 
@@ -863,16 +574,13 @@ export function PhoneTracker() {
     setSearchLog([]);
   };
 
-  // Format date helper
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
-    }).toUpperCase();
+    return date
+      .toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })
+      .toUpperCase();
   };
 
-  return (
+    return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
       {/* Header */}
       <header className="border-b border-gray-800/50 px-6 py-3">
@@ -881,9 +589,11 @@ export function PhoneTracker() {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">M</span>
             </div>
-            <span className="text-xl font-light">mobile-<span className="font-bold text-blue-500">locator</span></span>
+            <span className="text-xl font-light">
+              mobile-<span className="font-bold text-blue-500">locator</span>
+            </span>
             {isChecking && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="ml-4 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-full flex items-center gap-2"
@@ -906,34 +616,31 @@ export function PhoneTracker() {
             <button className="text-gray-400 hover:text-white transition">
               <Settings className="h-5 w-5" />
             </button>
-            <button 
+            <button
               onClick={() => setIsHistoryOpen(true)}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition relative"
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition"
             >
-              
+              <Clock className="h-5 w-5" />
             </button>
-            
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <div className="flex h-[calc(100vh-57px)]">
-        {/* Left Panel - Controls */}
+        {/* Left Panel */}
         <div className="w-[450px] bg-[#141824] border-r border-gray-800/50 overflow-y-auto">
           <div className="p-6">
-            {/* Date and Security Status */}
+            {/* Date and Security */}
             <div className="flex justify-between items-center mb-6">
-              <p className="text-sm text-gray-400">
-                {formatDate(new Date())}
-              </p>
+              <p className="text-sm text-gray-400">{formatDate(new Date())}</p>
               <div className="flex items-center gap-2">
                 <Lock className="h-3 w-3 text-green-500" />
                 <span className="text-xs text-green-500">SECURE</span>
               </div>
             </div>
 
-            {/* API Error Message */}
+            {/* API Error */}
             {apiError && (
               <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                 <p className="text-xs text-red-400">API Error: {apiError}</p>
@@ -941,21 +648,21 @@ export function PhoneTracker() {
               </div>
             )}
 
-            
-
             {/* Search Progress Log */}
             <AnimatePresence>
               {isChecking && searchLog.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="mb-4 bg-black/40 rounded-lg border border-gray-700/50 overflow-hidden"
                 >
                   <div className="p-3 bg-gray-800/50 border-b border-gray-700/50 flex items-center gap-2">
                     <Activity className="h-4 w-4 text-blue-500 animate-pulse" />
                     <span className="text-xs font-medium text-gray-300">Live Search Feed</span>
-                    <span className="text-xs text-gray-500 ml-auto">{searchLog.length}/35 operations</span>
+                    <span className="text-xs text-gray-500 ml-auto">
+                      {searchLog.length}/29 operations
+                    </span>
                   </div>
                   <div className="h-48 overflow-y-auto p-2 font-mono text-xs">
                     {searchLog.map((log, index) => (
@@ -965,15 +672,15 @@ export function PhoneTracker() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                         className={`py-1 border-l-2 pl-3 mb-1 ${
-                          index === searchLog.length - 1 
-                            ? 'border-blue-500 text-blue-400' 
-                            : 'border-gray-700 text-gray-400'
+                          index === searchLog.length - 1
+                            ? "border-blue-500 text-blue-400"
+                            : "border-gray-700 text-gray-400"
                         }`}
                       >
                         {log}
                       </motion.div>
                     ))}
-                    {searchLog.length < 35 && (
+                    {searchLog.length < 29 && (
                       <div className="flex items-center gap-2 text-gray-600 py-1">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         <span>Scanning...</span>
@@ -1008,7 +715,7 @@ export function PhoneTracker() {
                     </span>
                   </div>
 
-                  {/* Progress Bar with percentage */}
+                  {/* Progress Bar */}
                   <div className="relative mb-2">
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                       <motion.div
@@ -1022,15 +729,15 @@ export function PhoneTracker() {
                     </span>
                   </div>
 
-                  {/* Stage indicators */}
+                  {/* Stage Indicators */}
                   <div className="grid grid-cols-3 gap-1 mt-4">
                     {[0, 1, 2, 3, 4, 5].map((stage) => (
-                      <div 
+                      <div
                         key={stage}
                         className={`h-1 rounded-full transition-colors ${
-                          Math.floor(searchStage / 6) >= stage 
-                            ? 'bg-blue-500' 
-                            : 'bg-gray-700'
+                          Math.floor(searchStage / 6) >= stage
+                            ? "bg-blue-500"
+                            : "bg-gray-700"
                         }`}
                       />
                     ))}
@@ -1046,7 +753,9 @@ export function PhoneTracker() {
                 Target Phone Number
               </h2>
               <p className="text-xs text-gray-500 mb-4">
-                Enter the target phone number in international format. The system will scan multiple databases including social media and dark web sources.
+                Enter the target phone number in international format. The system
+                will scan multiple databases including social media and dark web
+                sources.
               </p>
 
               {/* Country Selector */}
@@ -1058,8 +767,8 @@ export function PhoneTracker() {
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     {selectedCountry?.flags?.svg ? (
-                      <img 
-                        src={selectedCountry.flags.svg} 
+                      <img
+                        src={selectedCountry.flags.svg}
                         alt={selectedCountry.flags.alt || `Flag of ${selectedCountry.name.common}`}
                         className="w-6 h-4 object-cover rounded flex-shrink-0"
                         onError={(e) => {
@@ -1070,14 +779,23 @@ export function PhoneTracker() {
                       <span className="text-lg flex-shrink-0">🌍</span>
                     )}
                     <div className="truncate">
-                      <span className="text-white font-medium">{selectedCountry?.cca2 || "SG"}</span>
-                      <span className="text-gray-400 text-sm ml-2 truncate">/ {selectedCountry?.name.common || "Singapore"}</span>
+                      <span className="text-white font-medium">
+                        {selectedCountry?.cca2 || "SG"}
+                      </span>
+                      <span className="text-gray-400 text-sm ml-2 truncate">
+                        / {selectedCountry?.name.common || "Singapore"}
+                      </span>
                     </div>
                     <span className="text-blue-500 ml-2 flex-shrink-0">
-                      {selectedCountry?.idd?.root}{selectedCountry?.idd?.suffixes?.[0] || "+65"}
+                      {selectedCountry?.idd?.root}
+                      {selectedCountry?.idd?.suffixes?.[0] || "+65"}
                     </span>
                   </div>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ${showCountries ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ${
+                      showCountries ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
                 {/* Country Dropdown */}
@@ -1095,7 +813,9 @@ export function PhoneTracker() {
                     ) : (
                       countries.map((country) => {
                         const hasCities = citiesDatabase[country.cca2];
-                        const cityCount = hasCities ? citiesDatabase[country.cca2].length : 0;
+                        const cityCount = hasCities
+                          ? citiesDatabase[country.cca2].length
+                          : 0;
                         return (
                           <button
                             key={country.cca2}
@@ -1104,8 +824,8 @@ export function PhoneTracker() {
                           >
                             <div className="flex items-center gap-2 min-w-0">
                               {country.flags?.svg && (
-                                <img 
-                                  src={country.flags.svg} 
+                                <img
+                                  src={country.flags.svg}
                                   alt={country.flags.alt || `Flag of ${country.name.common}`}
                                   className="w-6 h-4 object-cover rounded flex-shrink-0"
                                   onError={(e) => {
@@ -1115,7 +835,9 @@ export function PhoneTracker() {
                               )}
                               <div className="truncate">
                                 <span className="text-white">{country.cca2}</span>
-                                <span className="text-gray-400 text-sm ml-2 truncate">/ {country.name.common}</span>
+                                <span className="text-gray-400 text-sm ml-2 truncate">
+                                  / {country.name.common}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -1125,7 +847,8 @@ export function PhoneTracker() {
                                 </span>
                               )}
                               <span className="text-blue-500 flex-shrink-0 ml-2">
-                                {country.idd?.root}{country.idd?.suffixes?.[0] || ""}
+                                {country.idd?.root}
+                                {country.idd?.suffixes?.[0] || ""}
                               </span>
                             </div>
                           </button>
@@ -1136,7 +859,7 @@ export function PhoneTracker() {
                 )}
               </div>
 
-              {/* Phone Input with security indicator */}
+              {/* Phone Input */}
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg px-4 py-3 flex items-center group focus-within:border-blue-500/50 transition">
                   <Phone className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
@@ -1144,7 +867,11 @@ export function PhoneTracker() {
                     type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder={selectedCountry ? `${selectedCountry.idd?.root}${selectedCountry.idd?.suffixes?.[0] || ""} 9123 4567` : "+65 9123 4567"}
+                    placeholder={
+                      selectedCountry
+                        ? `${selectedCountry.idd?.root}${selectedCountry.idd?.suffixes?.[0] || ""} 9123 4567`
+                        : "+65 9123 4567"
+                    }
                     className="bg-transparent outline-none text-white placeholder-gray-600 w-full"
                     disabled={isChecking}
                   />
@@ -1185,7 +912,7 @@ export function PhoneTracker() {
               </div>
             </div>
 
-            {/* Device Data Section - Enhanced */}
+            {/* Device Data Section */}
             <AnimatePresence mode="wait">
               {deviceData && (
                 <motion.div
@@ -1200,20 +927,25 @@ export function PhoneTracker() {
                       Intelligence Report
                     </h2>
                     {deviceData.riskScore && (
-                      <div className={`flex items-center gap-1 px-2 py-1 rounded ${
-                        deviceData.riskScore > 85 ? 'bg-red-500/20 text-red-400' : 
-                        deviceData.riskScore > 70 ? 'bg-yellow-500/20 text-yellow-400' : 
-                        'bg-green-500/20 text-green-400'
-                      }`}>
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1 rounded ${
+                          deviceData.riskScore > 85
+                            ? "bg-red-500/20 text-red-400"
+                            : deviceData.riskScore > 70
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-green-500/20 text-green-400"
+                        }`}
+                      >
                         <Shield className="h-3 w-3" />
                         <span className="text-xs">Risk Score: {deviceData.riskScore}</span>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="bg-[#1e1f2c] rounded-lg border border-gray-700/50 overflow-hidden">
                     <div className="divide-y divide-gray-800">
-                      {/* Phone Number with Flag and Carrier */}
+
+                      {/* Phone */}
                       <div className="flex items-center justify-between px-4 py-3 hover:bg-[#252634]">
                         <div className="flex items-center gap-3">
                           <Phone className="h-4 w-4 text-gray-500" />
@@ -1222,15 +954,15 @@ export function PhoneTracker() {
                         <div className="flex items-center gap-3">
                           <span className="text-sm text-white font-medium">{deviceData.number}</span>
                           {deviceData.flag && (
-                            <img 
-                              src={deviceData.flag} 
+                            <img
+                              src={deviceData.flag}
                               alt={`Flag of ${deviceData.country}`}
                               className="w-5 h-3 object-cover rounded"
                             />
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Carrier */}
                       {deviceData.carrier && (
                         <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
@@ -1242,13 +974,15 @@ export function PhoneTracker() {
                         </div>
                       )}
 
-                      {/* Device Info */}
+                      {/* Device */}
                       <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                         <div className="flex items-center gap-3">
                           <Smartphone className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-400">Device</span>
                         </div>
-                        <span className="text-sm text-white">{deviceData.deviceModel} • {deviceData.os}</span>
+                        <span className="text-sm text-white">
+                          {deviceData.deviceModel} • {deviceData.os}
+                        </span>
                       </div>
 
                       {/* Last Seen */}
@@ -1268,10 +1002,12 @@ export function PhoneTracker() {
                           <Globe className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-400">Country</span>
                         </div>
-                        <span className="text-sm text-white">{deviceData.country} ({deviceData.countryCode})</span>
+                        <span className="text-sm text-white">
+                          {deviceData.country} ({deviceData.countryCode})
+                        </span>
                       </div>
 
-                      {/* City/Town */}
+                      {/* City */}
                       <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                         <div className="flex items-center gap-3">
                           <MapPin className="h-4 w-4 text-gray-500" />
@@ -1296,7 +1032,9 @@ export function PhoneTracker() {
                             <Users className="h-4 w-4 text-gray-500" />
                             <span className="text-sm text-gray-400">Population</span>
                           </div>
-                          <span className="text-sm text-white">{deviceData.cityPopulation.toLocaleString()}</span>
+                          <span className="text-sm text-white">
+                            {deviceData.cityPopulation.toLocaleString()}
+                          </span>
                         </div>
                       )}
 
@@ -1320,7 +1058,7 @@ export function PhoneTracker() {
                         <span className="text-sm text-white">{deviceData.street}</span>
                       </div>
 
-                      {/* Social Media Section */}
+                      {/* Social Media */}
                       {deviceData.socialMedia && (
                         <>
                           <div className="px-4 py-2 bg-gray-800/30">
@@ -1329,14 +1067,16 @@ export function PhoneTracker() {
                               SOCIAL MEDIA PRESENCE
                             </span>
                           </div>
-                          
+
                           {deviceData.socialMedia.facebook && (
                             <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                               <div className="flex items-center gap-3">
                                 <Facebook className="h-4 w-4 text-blue-500" />
                                 <span className="text-sm text-gray-400">Facebook</span>
                               </div>
-                              <span className="text-sm text-blue-400">{deviceData.socialMedia.facebook}</span>
+                              <span className="text-sm text-blue-400">
+                                {deviceData.socialMedia.facebook}
+                              </span>
                             </div>
                           )}
 
@@ -1346,7 +1086,9 @@ export function PhoneTracker() {
                                 <Instagram className="h-4 w-4 text-pink-500" />
                                 <span className="text-sm text-gray-400">Instagram</span>
                               </div>
-                              <span className="text-sm text-pink-400">{deviceData.socialMedia.instagram}</span>
+                              <span className="text-sm text-pink-400">
+                                {deviceData.socialMedia.instagram}
+                              </span>
                             </div>
                           )}
 
@@ -1356,7 +1098,9 @@ export function PhoneTracker() {
                                 <Twitter className="h-4 w-4 text-sky-500" />
                                 <span className="text-sm text-gray-400">Twitter/X</span>
                               </div>
-                              <span className="text-sm text-sky-400">{deviceData.socialMedia.twitter}</span>
+                              <span className="text-sm text-sky-400">
+                                {deviceData.socialMedia.twitter}
+                              </span>
                             </div>
                           )}
 
@@ -1366,20 +1110,24 @@ export function PhoneTracker() {
                                 <Linkedin className="h-4 w-4 text-blue-700" />
                                 <span className="text-sm text-gray-400">LinkedIn</span>
                               </div>
-                              <span className="text-sm text-blue-400">{deviceData.socialMedia.linkedin}</span>
+                              <span className="text-sm text-blue-400">
+                                {deviceData.socialMedia.linkedin}
+                              </span>
                             </div>
                           )}
                         </>
                       )}
 
-                      {/* Dark Web Mentions */}
+                      {/* Dark Web */}
                       {deviceData.darkWebMentions && (
                         <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                           <div className="flex items-center gap-3">
                             <ShieldAlert className="h-4 w-4 text-red-500" />
                             <span className="text-sm text-gray-400">Dark Web Mentions</span>
                           </div>
-                          <span className="text-sm text-red-400">{deviceData.darkWebMentions} instances</span>
+                          <span className="text-sm text-red-400">
+                            {deviceData.darkWebMentions} instances
+                          </span>
                         </div>
                       )}
 
@@ -1410,16 +1158,23 @@ export function PhoneTracker() {
                   {/* Data Freshness */}
                   <div className="mt-2 flex items-center justify-end gap-2 text-xs text-gray-600">
                     <Clock className="h-3 w-3" />
-                    <span>Data collected {new Date(deviceData.timestamp).toLocaleTimeString()}</span>
+                    <span>
+                      Data collected {new Date(deviceData.timestamp).toLocaleTimeString()}
+                    </span>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Open in Maps Button */}
+            {/* Open in Maps */}
             {deviceData && (
-              <button 
-                onClick={() => window.open(`https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}`, '_blank')}
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}`,
+                    "_blank"
+                  )
+                }
                 className="w-full bg-[#1e1f2c] border border-gray-700/50 rounded-lg px-4 py-3 hover:bg-[#252634] transition mb-4 group flex items-center justify-between"
               >
                 <span className="text-blue-500 group-hover:text-blue-400 flex items-center gap-2">
@@ -1430,15 +1185,15 @@ export function PhoneTracker() {
               </button>
             )}
 
-            {/* Footer Note */}
+            {/* Footer */}
             <div className="mt-8 text-xs text-gray-600 border-t border-gray-800/50 pt-4">
               <div className="flex items-center gap-2 mb-2">
                 <Shield className="h-3 w-3 text-green-500/50" />
                 <span>All data is encrypted and anonymized</span>
               </div>
               <p className="text-gray-600">
-                Intelligence gathered from 27 sources including public databases, social media APIs, and dark web crawlers.
-                Data accuracy: 93.7%
+                Intelligence gathered from 27 sources including public databases,
+                social media APIs, and dark web crawlers. Data accuracy: 93.7%
               </p>
             </div>
           </div>
@@ -1449,22 +1204,22 @@ export function PhoneTracker() {
           {/* Map Type Toggle */}
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#1e1f2c]/90 backdrop-blur-sm border border-gray-700/50 rounded-lg flex z-20">
             <button
-              onClick={() => setMapType('google')}
+              onClick={() => setMapType("google")}
               className={`px-4 py-2 text-sm rounded-l-lg flex items-center gap-2 transition ${
-                mapType === 'google' 
-                  ? 'bg-blue-500/20 text-blue-500' 
-                  : 'text-gray-400 hover:text-white'
+                mapType === "google"
+                  ? "bg-blue-500/20 text-blue-500"
+                  : "text-gray-400 hover:text-white"
               }`}
             >
               <MapIcon className="h-4 w-4" />
               Satellite
             </button>
             <button
-              onClick={() => setMapType('earth')}
+              onClick={() => setMapType("earth")}
               className={`px-4 py-2 text-sm rounded-r-lg flex items-center gap-2 transition ${
-                mapType === 'earth' 
-                  ? 'bg-blue-500/20 text-blue-500' 
-                  : 'text-gray-400 hover:text-white'
+                mapType === "earth"
+                  ? "bg-blue-500/20 text-blue-500"
+                  : "text-gray-400 hover:text-white"
               }`}
             >
               <Globe className="h-4 w-4" />
@@ -1482,7 +1237,9 @@ export function PhoneTracker() {
               <div className="flex items-center gap-2 text-sm mb-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-gray-300">Live tracking:</span>
-                <span className="text-white font-medium">{deviceData.city}, {deviceData.country}</span>
+                <span className="text-white font-medium">
+                  {deviceData.city}, {deviceData.country}
+                </span>
               </div>
               <div className="text-xs text-gray-400 font-mono">
                 {deviceData.latNum.toFixed(6)}°, {deviceData.lngNum.toFixed(6)}°
@@ -1498,7 +1255,7 @@ export function PhoneTracker() {
 
           {/* Scanning Overlay */}
           {isChecking && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="absolute inset-0 z-10 pointer-events-none"
@@ -1508,16 +1265,18 @@ export function PhoneTracker() {
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full border-4 border-blue-500/30 animate-ping"></div>
                   <div className="relative bg-black/50 backdrop-blur-sm rounded-full p-6">
-                    <Satellite className="h-12 w-12 text-blue-500 animate-spin-slow" />
+                    <Satellite className="h-12 w-12 text-blue-500 animate-spin" />
                   </div>
                 </div>
-                <p className="mt-4 text-blue-400 font-mono text-sm">SCANNING GLOBAL NETWORKS</p>
+                <p className="mt-4 text-blue-400 font-mono text-sm">
+                  SCANNING GLOBAL NETWORKS
+                </p>
               </div>
             </motion.div>
           )}
 
           {/* Map Content */}
-          {mapType === 'google' ? (
+          {mapType === "google" ? (
             deviceData ? (
               <FreeGoogleMap
                 latitude={deviceData.latNum}
@@ -1529,13 +1288,17 @@ export function PhoneTracker() {
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#050510] to-[#0a0a20]">
                 <div className="text-center">
                   <Compass className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">Enter a phone number and click LAUNCH</p>
-                  <p className="text-gray-600 text-sm mt-2">to begin global satellite tracking</p>
+                  <p className="text-gray-400">
+                    Enter a phone number and click LAUNCH
+                  </p>
+                  <p className="text-gray-600 text-sm mt-2">
+                    to begin global satellite tracking
+                  </p>
                 </div>
               </div>
             )
           ) : (
-            <SpinningEarth 
+            <SpinningEarth
               isChecking={isChecking}
               showMarker={deviceData !== null}
               latitude={deviceData?.latNum || 0}
@@ -1545,24 +1308,30 @@ export function PhoneTracker() {
 
           {/* Map Controls */}
           <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
-            <button 
+            <button
               onClick={() => {
                 if (deviceData) {
-                  window.open(`https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}&z=${16}`, '_blank');
+                  window.open(
+                    `https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}&z=16`,
+                    "_blank"
+                  );
                 }
               }}
-              className="w-10 h-10 bg-[#1e1f2c]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg flex items-center justify-center hover:bg-[#252634] transition"
+              className="w-10 h-10 bg-[#1e1f2c]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg flex items-center justify-center hover:bg-[#252634] transition disabled:opacity-50"
               disabled={!deviceData}
             >
               <span className="text-white text-xl">+</span>
             </button>
-            <button 
+            <button
               onClick={() => {
                 if (deviceData) {
-                  window.open(`https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}`, '_blank');
+                  window.open(
+                    `https://www.google.com/maps?q=${deviceData.latNum},${deviceData.lngNum}`,
+                    "_blank"
+                  );
                 }
               }}
-              className="w-10 h-10 bg-[#1e1f2c]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg flex items-center justify-center hover:bg-[#252634] transition"
+              className="w-10 h-10 bg-[#1e1f2c]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg flex items-center justify-center hover:bg-[#252634] transition disabled:opacity-50"
               disabled={!deviceData}
             >
               <span className="text-white text-sm">⤢</span>

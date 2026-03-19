@@ -6,7 +6,7 @@ import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EmailInput } from "@/components/ui/EmailInput";
 import { Button } from "@/components/ui/Button";
 import { SearchAnimation } from "@/components/ui/SearchAnimation";
-
+import { FreeGoogleMap } from "@/components/ui/FreeGoogleMap"
 import { LocationDetails } from "@/components/ui/LocationDetails";
 import { 
   Globe, 
@@ -479,10 +479,10 @@ export function Hero() {
                     )}
                   </div>
                   <div className="h-[450px] w-full">
-                    <MapWrapper
+                    <FreeGoogleMap
                       latitude={selectedCity?.latitude || countryInfo.latlng[0]}
                       longitude={selectedCity?.longitude || countryInfo.latlng[1]}
-                      title={selectedCity?.name || countryInfo.name.common}
+                      markerTitle={selectedCity?.name || countryInfo.name.common}
                       zoom={selectedCity ? 12 : 6}
                     />
                   </div>

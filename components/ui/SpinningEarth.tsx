@@ -3,7 +3,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"; // ← added .js
 
 interface SpinningEarthProps {
   isChecking?: boolean;
@@ -12,11 +12,11 @@ interface SpinningEarthProps {
   showMarker?: boolean;
 }
 
-export function SpinningEarth({ 
-  isChecking = false, 
-  latitude = 0, 
+export function SpinningEarth({
+  isChecking = false,
+  latitude = 0,
   longitude = 0,
-  showMarker = false 
+  showMarker = false
 }: SpinningEarthProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -28,40 +28,43 @@ export function SpinningEarth({
   const markerRef = useRef<THREE.Mesh | null>(null);
   const ringRef = useRef<THREE.Mesh | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | undefined>(undefined); // ← fixed type
   const starsRef = useRef<THREE.Points | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup with better background
+    // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x03030a); // Darker space blue
+    scene.background = new THREE.Color(0x03030a);
     sceneRef.current = scene;
 
-    // Camera setup with better perspective
+    // Camera
     const camera = new THREE.PerspectiveCamera(
       45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.set(0, 2, 18); // Slightly elevated view
+    camera.position.set(0, 2, 18);
     cameraRef.current = camera;
 
-    // Renderer setup with better quality
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
       alpha: false,
       powerPreference: "high-performance"
     });
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit for performance
-    renderer.shadowMap.enabled = false; // Disable shadows for performance
+    renderer.setSize(
+      containerRef.current.clientWidth,
+      containerRef.current.clientHeight
+    );
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = false;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Add orbit controls for user interaction
+    // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -69,99 +72,90 @@ export function SpinningEarth({
     controls.autoRotateSpeed = 1.0;
     controls.enableZoom = true;
     controls.enablePan = false;
-    controls.maxPolarAngle = Math.PI / 2; // Limit rotation
+    controls.maxPolarAngle = Math.PI / 2;
     controls.minDistance = 10;
     controls.maxDistance = 25;
     controlsRef.current = controls;
 
-    // Enhanced lighting
-    // Ambient light for base illumination
+    // Lighting
     const ambientLight = new THREE.AmbientLight(0x404060);
     scene.add(ambientLight);
 
-    // Main directional light (sun)
     const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.8);
     sunLight.position.set(10, 5, 10);
     sunLight.castShadow = false;
     scene.add(sunLight);
 
-    // Fill light from opposite side
     const fillLight = new THREE.DirectionalLight(0x446688, 0.6);
     fillLight.position.set(-10, 0, -10);
     scene.add(fillLight);
 
-    // Add a subtle blue backlight
     const backLight = new THREE.PointLight(0x3366aa, 0.3);
     backLight.position.set(0, 0, -15);
     scene.add(backLight);
 
-    // Enhanced stars background
+    // Stars
     const starsGeometry = new THREE.BufferGeometry();
     const starsCount = 4000;
     const starsPositions = new Float32Array(starsCount * 3);
     const starsColors = new Float32Array(starsCount * 3);
-    
+
     for (let i = 0; i < starsCount; i++) {
-      // Random positions in a sphere
       const r = 80 + Math.random() * 40;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.sin(phi) * Math.sin(theta);
-      const z = r * Math.cos(phi);
-      
-      starsPositions[i * 3] = x;
-      starsPositions[i * 3 + 1] = y;
-      starsPositions[i * 3 + 2] = z;
-      
-      // Random star colors (mostly white, some blue/red)
+
+      starsPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+      starsPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      starsPositions[i * 3 + 2] = r * Math.cos(phi);
+
       const colorVal = 0.8 + Math.random() * 0.4;
       if (Math.random() > 0.9) {
-        // Occasional colored star
-        starsColors[i * 3] = Math.random(); // R
-        starsColors[i * 3 + 1] = Math.random() * 0.5; // G
-        starsColors[i * 3 + 2] = Math.random() * 0.5; // B
+        starsColors[i * 3]     = Math.random();
+        starsColors[i * 3 + 1] = Math.random() * 0.5;
+        starsColors[i * 3 + 2] = Math.random() * 0.5;
       } else {
-        starsColors[i * 3] = colorVal;
+        starsColors[i * 3]     = colorVal;
         starsColors[i * 3 + 1] = colorVal;
         starsColors[i * 3 + 2] = colorVal;
       }
     }
-    
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
-    starsGeometry.setAttribute('color', new THREE.BufferAttribute(starsColors, 3));
-    
-    const starsMaterial = new THREE.PointsMaterial({ 
+
+    starsGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(starsPositions, 3)
+    );
+    starsGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(starsColors, 3)
+    );
+
+    const starsMaterial = new THREE.PointsMaterial({
       size: 0.15,
       vertexColors: true,
       transparent: true,
       opacity: 0.9,
       blending: THREE.AdditiveBlending
     });
-    
+
     const stars = new THREE.Points(starsGeometry, starsMaterial);
     scene.add(stars);
     starsRef.current = stars;
 
-    // Create Earth with high-res textures
-    const earthGeometry = new THREE.SphereGeometry(5, 128, 128); // Higher resolution
-    
+    // Earth
+    const earthGeometry = new THREE.SphereGeometry(5, 128, 128);
     const textureLoader = new THREE.TextureLoader();
-    
-    // Load all textures with error handling
-    const loadTexture = (url: string) => {
-      return textureLoader.load(url, undefined, undefined, 
-        (err) => console.error(`Failed to load texture: ${url}`, err)
-      );
-    };
 
-    const earthTexture = loadTexture('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-    const earthSpecularMap = loadTexture('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
-    const earthNormalMap = loadTexture('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-    const cloudTexture = loadTexture('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
-    
-    // Earth material with better shading
+    const loadTexture = (url: string) =>
+      textureLoader.load(url, undefined, undefined, (err) =>
+        console.error(`Failed to load texture: ${url}`, err)
+      );
+
+    const earthTexture     = loadTexture("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg");
+    const earthSpecularMap = loadTexture("https://threejs.org/examples/textures/planets/earth_specular_2048.jpg");
+    const earthNormalMap   = loadTexture("https://threejs.org/examples/textures/planets/earth_normal_2048.jpg");
+    const cloudTexture     = loadTexture("https://threejs.org/examples/textures/planets/earth_clouds_1024.png");
+
     const earthMaterial = new THREE.MeshPhongMaterial({
       map: earthTexture,
       specularMap: earthSpecularMap,
@@ -172,14 +166,14 @@ export function SpinningEarth({
       emissive: new THREE.Color(0x000022),
       emissiveIntensity: 0.1
     });
-    
+
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     earth.castShadow = false;
     earth.receiveShadow = false;
     scene.add(earth);
     earthRef.current = earth;
 
-    // Add clouds layer with better blending
+    // Clouds
     const cloudsGeometry = new THREE.SphereGeometry(5.03, 128, 128);
     const cloudsMaterial = new THREE.MeshPhongMaterial({
       map: cloudTexture,
@@ -189,12 +183,12 @@ export function SpinningEarth({
       side: THREE.DoubleSide,
       depthWrite: false
     });
-    
+
     const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
     scene.add(clouds);
     cloudsRef.current = clouds;
 
-    // Add atmosphere glow
+    // Atmosphere glow
     const glowGeometry = new THREE.SphereGeometry(5.1, 64, 64);
     const glowMaterial = new THREE.MeshPhongMaterial({
       color: 0x2288ff,
@@ -204,12 +198,12 @@ export function SpinningEarth({
       emissive: 0x113366,
       emissiveIntensity: 0.5
     });
-    
+
     const glow = new THREE.Mesh(glowGeometry, glowMaterial);
     scene.add(glow);
     glowRef.current = glow;
 
-    // Add a subtle ring around Earth (atmosphere effect)
+    // Ring 1
     const ringGeometry = new THREE.TorusGeometry(5.15, 0.02, 32, 200);
     const ringMaterial = new THREE.MeshStandardMaterial({
       color: 0x3399ff,
@@ -223,7 +217,7 @@ export function SpinningEarth({
     ring.rotation.z = 0.3;
     scene.add(ring);
 
-    // Add a second ring at different angle
+    // Ring 2
     const ring2Geometry = new THREE.TorusGeometry(5.2, 0.01, 16, 200);
     const ring2Material = new THREE.MeshStandardMaterial({
       color: 0x66aaff,
@@ -240,33 +234,20 @@ export function SpinningEarth({
     const animate = () => {
       if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
 
-      // Rotate Earth and clouds at different speeds
-      if (earthRef.current) {
-        earthRef.current.rotation.y += isChecking ? 0.015 : 0.002;
-      }
-      if (cloudsRef.current) {
-        cloudsRef.current.rotation.y += isChecking ? 0.02 : 0.0025;
-      }
-      if (glowRef.current) {
-        glowRef.current.rotation.y += 0.0005;
-      }
+      if (earthRef.current)  earthRef.current.rotation.y  += isChecking ? 0.015 : 0.002;
+      if (cloudsRef.current) cloudsRef.current.rotation.y += isChecking ? 0.02  : 0.0025;
+      if (glowRef.current)   glowRef.current.rotation.y   += 0.0005;
 
-      // Rotate rings
-      ring.rotation.y += 0.001;
+      ring.rotation.y  += 0.001;
       ring2.rotation.y += 0.0015;
 
-      // Slowly rotate stars
-      if (starsRef.current) {
-        starsRef.current.rotation.y += 0.0001;
-      }
+      if (starsRef.current) starsRef.current.rotation.y += 0.0001;
 
-      // Update controls
       if (controlsRef.current) {
         controlsRef.current.autoRotate = !isChecking;
         controlsRef.current.update();
       }
 
-      // Add subtle camera movement when checking
       if (isChecking && cameraRef.current) {
         cameraRef.current.position.x = Math.sin(Date.now() * 0.002) * 2;
         cameraRef.current.lookAt(0, 0, 0);
@@ -275,31 +256,35 @@ export function SpinningEarth({
       rendererRef.current.render(sceneRef.current, cameraRef.current);
       frameRef.current = requestAnimationFrame(animate);
     };
-    
+
     animate();
 
-    // Handle resize
+    // Resize handler
     const handleResize = () => {
       if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
-      
-      cameraRef.current.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      cameraRef.current.aspect =
+        containerRef.current.clientWidth / containerRef.current.clientHeight;
       cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      rendererRef.current.setSize(
+        containerRef.current.clientWidth,
+        containerRef.current.clientHeight
+      );
     };
-    
-    window.addEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
-      if (frameRef.current) {
+      window.removeEventListener("resize", handleResize);
+      if (frameRef.current !== undefined) {
         cancelAnimationFrame(frameRef.current);
       }
       if (containerRef.current && rendererRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         containerRef.current.removeChild(rendererRef.current.domElement);
       }
-      
-      // Dispose geometries and materials to prevent memory leaks
+
+      // Dispose all geometries and materials ← fixed memory leaks
       earthGeometry.dispose();
       earthMaterial.dispose();
       cloudsGeometry.dispose();
@@ -308,33 +293,41 @@ export function SpinningEarth({
       glowMaterial.dispose();
       starsGeometry.dispose();
       starsMaterial.dispose();
-      
+      ringGeometry.dispose();
+      ringMaterial.dispose();
+      ring2Geometry.dispose();
+      ring2Material.dispose();
+
       rendererRef.current?.dispose();
     };
   }, [isChecking]);
 
-  // Add marker when location is found
+  // Marker effect
   useEffect(() => {
     if (!sceneRef.current || !earthRef.current || !showMarker) return;
 
-    // Remove existing marker
+    // Remove existing marker and ring
     if (markerRef.current) {
       sceneRef.current.remove(markerRef.current);
+      (markerRef.current.geometry as THREE.BufferGeometry).dispose();
+      (markerRef.current.material as THREE.Material).dispose();
     }
     if (ringRef.current) {
       sceneRef.current.remove(ringRef.current);
+      (ringRef.current.geometry as THREE.BufferGeometry).dispose();
+      (ringRef.current.material as THREE.Material).dispose();
     }
 
-    // Convert lat/long to 3D position on sphere
-    const lat = latitude * Math.PI / 180;
-    const lon = longitude * Math.PI / 180;
-    
-    const radius = 5.2; // Slightly above earth surface
+    // Convert lat/lon to 3D position
+    const lat = (latitude  * Math.PI) / 180;
+    const lon = (longitude * Math.PI) / 180;
+    const radius = 5.2;
+
     const x = radius * Math.cos(lat) * Math.cos(lon);
     const y = radius * Math.sin(lat);
     const z = radius * Math.cos(lat) * Math.sin(lon);
 
-    // Create glowing marker
+    // Marker
     const markerGeometry = new THREE.SphereGeometry(0.15, 16, 16);
     const markerMaterial = new THREE.MeshStandardMaterial({
       color: 0xff3333,
@@ -346,28 +339,25 @@ export function SpinningEarth({
     sceneRef.current.add(marker);
     markerRef.current = marker;
 
-    // Create pulsing ring
-    const ringGeometry = new THREE.TorusGeometry(0.3, 0.02, 16, 32);
-    const ringMaterial = new THREE.MeshStandardMaterial({
+    // Pulsing ring
+    const markerRingGeometry = new THREE.TorusGeometry(0.3, 0.02, 16, 32);
+    const markerRingMaterial = new THREE.MeshStandardMaterial({
       color: 0xff3333,
       emissive: 0xff0000,
       emissiveIntensity: 1.0,
       transparent: true,
       opacity: 0.8
     });
-    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-    ring.position.set(x, y, z);
-    
-    // Orient ring to face camera
-    ring.quaternion.setFromUnitVectors(
+    const markerRing = new THREE.Mesh(markerRingGeometry, markerRingMaterial);
+    markerRing.position.set(x, y, z);
+    markerRing.quaternion.setFromUnitVectors(
       new THREE.Vector3(0, 1, 0),
       new THREE.Vector3(x, y, z).normalize()
     );
-    
-    sceneRef.current.add(ring);
-    ringRef.current = ring;
+    sceneRef.current.add(markerRing);
+    ringRef.current = markerRing;
 
-    // Add a beam of light
+    // Beam of light
     const beamGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 8);
     const beamMaterial = new THREE.MeshStandardMaterial({
       color: 0xff3333,
@@ -381,38 +371,48 @@ export function SpinningEarth({
     beam.lookAt(new THREE.Vector3(x * 2, y * 2, z * 2));
     sceneRef.current.add(beam);
 
-    // Animate the ring pulsing
+    // Pulse animation
     let pulseTime = 0;
     const pulseInterval = setInterval(() => {
-      if (ringRef.current && sceneRef.current) {
+      if (ringRef.current) {
         pulseTime += 0.1;
         const scale = 1 + Math.sin(pulseTime) * 0.2;
         ringRef.current.scale.set(scale, scale, scale);
-        
-        if (ringRef.current.material) {
-          (ringRef.current.material as THREE.MeshStandardMaterial).opacity = 
-            0.5 + Math.sin(pulseTime) * 0.3;
-        }
+        (ringRef.current.material as THREE.MeshStandardMaterial).opacity =
+          0.5 + Math.sin(pulseTime) * 0.3;
       }
     }, 50);
 
+    // Cleanup ← fixed — now disposes beam too
     return () => {
       clearInterval(pulseInterval);
+      if (sceneRef.current) {
+        sceneRef.current.remove(marker);
+        sceneRef.current.remove(markerRing);
+        sceneRef.current.remove(beam);
+      }
+      markerGeometry.dispose();
+      markerMaterial.dispose();
+      markerRingGeometry.dispose();
+      markerRingMaterial.dispose();
+      beamGeometry.dispose();      // ← fixed memory leak
+      beamMaterial.dispose();      // ← fixed memory leak
     };
   }, [showMarker, latitude, longitude]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="w-full h-full min-h-[600px] bg-gradient-to-b from-[#03030a] via-[#08081a] to-[#0a0a20] rounded-xl overflow-hidden relative"
     >
-      {/* Loading Overlay */}
       {isChecking && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <div className="bg-black/50 backdrop-blur-sm px-6 py-3 rounded-full border border-blue-500/30">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-white text-sm font-medium">Scanning global networks...</span>
+              <span className="text-white text-sm font-medium">
+                Scanning global networks...
+              </span>
             </div>
           </div>
         </div>
