@@ -10,7 +10,7 @@ import {
   Facebook, Twitter, Instagram, Linkedin,
   MessageCircle, CreditCard, MapPin as MapPinIcon,
   Users, Target, Search, Compass, Smartphone,
-  Clock
+  Clock, AlertTriangle
 } from "lucide-react";
 import { SpinningEarth } from "@/components/ui/SpinningEarth";
 import { FreeGoogleMap } from "@/components/ui/FreeGoogleMap";
@@ -89,7 +89,6 @@ interface DeviceData {
   darkWebMentions?: number;
 }
 
-// Cities database
 const citiesDatabase: Record<string, City[]> = {
   SG: [
     { name: "Singapore (City Centre)", latitude: 1.290270, longitude: 103.851959, country: "SG", region: "Central", population: 150000, isCapital: true },
@@ -282,7 +281,6 @@ export function PhoneTracker() {
   const [searchLog, setSearchLog] = useState<string[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // ✅ Full number = country code + local number
   const getDialCode = (country: Country | null) => {
     if (!country) return "";
     return `${country.idd?.root}${country.idd?.suffixes?.[0] || ""}`;
@@ -389,7 +387,13 @@ export function PhoneTracker() {
       deviceModel: entry.deviceModel,
       os: entry.os,
       lastSeen: entry.lastSeen,
-      socialMedia: entry.socialMedia,
+      // ✅ Always Unknown from history too
+      socialMedia: {
+        facebook: "Unknown",
+        instagram: "Unknown",
+        twitter: "Unknown",
+        linkedin: "Unknown",
+      },
       riskScore: entry.riskScore,
       darkWebMentions: entry.darkWebMentions,
     };
@@ -467,9 +471,6 @@ export function PhoneTracker() {
     const cityName = randomCity?.name || selectedCountry.capital?.[0] || "Unknown";
     const region = randomCity?.region || selectedCountry.subregion || selectedCountry.region;
 
-    const firstName = ["John","Jane","Alex","Sam","Chris","Pat","Taylor","Jordan","Casey","Riley"][Math.floor(Math.random() * 10)];
-    const lastName  = ["Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez"][Math.floor(Math.random() * 10)];
-    const randomNum = Math.floor(Math.random() * 1000);
     const streets     = ["Main","Oak","Pine","Maple","Cedar","Washington","Lincoln","Park","Lake","Hill"];
     const streetTypes = ["Street","Avenue","Road","Drive","Lane","Boulevard"];
     const randomStreet = `${streets[Math.floor(Math.random() * streets.length)]} ${streetTypes[Math.floor(Math.random() * streetTypes.length)]}`;
@@ -501,11 +502,12 @@ export function PhoneTracker() {
         ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)]
         : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
       lastSeen: new Date().toLocaleString(),
+      // ✅ Always Unknown
       socialMedia: {
-        facebook:  `facebook.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
-        instagram: `@${firstName.toLowerCase()}${lastName.toLowerCase()}${randomNum}`,
-        twitter:   `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
-        linkedin:  `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${randomNum}`,
+        facebook:  "Unknown",
+        instagram: "Unknown",
+        twitter:   "Unknown",
+        linkedin:  "Unknown",
       },
       riskScore:       Math.floor(Math.random() * 30) + 70,
       darkWebMentions: Math.floor(Math.random() * 5) + 1,
@@ -578,7 +580,7 @@ export function PhoneTracker() {
             <button className="text-gray-400 hover:text-white transition">
               <Settings className="h-5 w-5" />
             </button>
-            </div>
+          </div>
         </div>
       </header>
 
@@ -685,7 +687,7 @@ export function PhoneTracker() {
               )}
             </AnimatePresence>
 
-            {/* ✅ Phone Input Section */}
+            {/* Phone Input */}
             <div className="mb-8">
               <h2 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
                 <Phone className="h-4 w-4" />
@@ -716,7 +718,6 @@ export function PhoneTracker() {
                     <span className="text-white font-medium">
                       {selectedCountry?.name.common || "Select Country"}
                     </span>
-                    {/* ✅ Dial code badge */}
                     <span className="ml-auto px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded font-mono flex-shrink-0">
                       {getDialCode(selectedCountry)}
                     </span>
@@ -735,7 +736,6 @@ export function PhoneTracker() {
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute top-full left-0 right-0 mt-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden flex flex-col"
                   >
-                    {/* Search inside dropdown */}
                     <div className="p-2 border-b border-gray-700/50">
                       <input
                         type="text"
@@ -793,10 +793,9 @@ export function PhoneTracker() {
                 )}
               </div>
 
-              {/* ✅ Phone Input with auto dial code prefix */}
+              {/* Phone Input */}
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg flex items-center group focus-within:border-blue-500/50 transition overflow-hidden">
-                  {/* Dial code prefix — read only */}
                   <span className="px-3 py-3 text-blue-400 font-mono text-sm bg-[#252634] border-r border-gray-700/50 flex-shrink-0">
                     {getDialCode(selectedCountry) || "+--"}
                   </span>
@@ -842,7 +841,6 @@ export function PhoneTracker() {
                 )}
               </div>
 
-              {/* Full number preview */}
               {localNumber && selectedCountry && (
                 <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
                   <Globe className="h-3 w-3 text-blue-500" />
@@ -871,7 +869,7 @@ export function PhoneTracker() {
                       <Database className="h-4 w-4" />
                       Intelligence Report
                     </h2>
-                                        {deviceData.riskScore && (
+                    {deviceData.riskScore && (
                       <div className={`flex items-center gap-1 px-2 py-1 rounded ${
                         deviceData.riskScore > 85
                           ? "bg-red-500/20 text-red-400"
@@ -894,7 +892,7 @@ export function PhoneTracker() {
                           <Phone className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-400">Phone</span>
                         </div>
-                        <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-3">
                           <span className="text-sm text-white font-medium font-mono">{deviceData.number}</span>
                           {deviceData.flag && (
                             <img
@@ -1001,7 +999,7 @@ export function PhoneTracker() {
                         <span className="text-sm text-white">{deviceData.street}</span>
                       </div>
 
-                      {/* Social Media */}
+                      {/* ✅ Social Media — Always Unknown */}
                       {deviceData.socialMedia && (
                         <>
                           <div className="px-4 py-2 bg-gray-800/30">
@@ -1010,42 +1008,38 @@ export function PhoneTracker() {
                               SOCIAL MEDIA PRESENCE
                             </span>
                           </div>
-                          {deviceData.socialMedia.facebook && (
-                            <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
-                              <div className="flex items-center gap-3">
-                                <Facebook className="h-4 w-4 text-blue-500" />
-                                <span className="text-sm text-gray-400">Facebook</span>
-                              </div>
-                              <span className="text-sm text-blue-400">{deviceData.socialMedia.facebook}</span>
+
+                          <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
+                            <div className="flex items-center gap-3">
+                              <Facebook className="h-4 w-4 text-blue-500" />
+                              <span className="text-sm text-gray-400">Facebook</span>
                             </div>
-                          )}
-                          {deviceData.socialMedia.instagram && (
-                            <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
-                              <div className="flex items-center gap-3">
-                                <Instagram className="h-4 w-4 text-pink-500" />
-                                <span className="text-sm text-gray-400">Instagram</span>
-                              </div>
-                              <span className="text-sm text-pink-400">{deviceData.socialMedia.instagram}</span>
+                            <span className="text-sm text-gray-500 italic">Unknown</span>
+                          </div>
+
+                          <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
+                            <div className="flex items-center gap-3">
+                              <Instagram className="h-4 w-4 text-pink-500" />
+                              <span className="text-sm text-gray-400">Instagram</span>
                             </div>
-                          )}
-                          {deviceData.socialMedia.twitter && (
-                            <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
-                              <div className="flex items-center gap-3">
-                                <Twitter className="h-4 w-4 text-sky-500" />
-                                <span className="text-sm text-gray-400">Twitter/X</span>
-                              </div>
-                              <span className="text-sm text-sky-400">{deviceData.socialMedia.twitter}</span>
+                            <span className="text-sm text-gray-500 italic">Unknown</span>
+                          </div>
+
+                          <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
+                            <div className="flex items-center gap-3">
+                              <Twitter className="h-4 w-4 text-sky-500" />
+                              <span className="text-sm text-gray-400">Twitter/X</span>
                             </div>
-                          )}
-                          {deviceData.socialMedia.linkedin && (
-                            <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
-                              <div className="flex items-center gap-3">
-                                <Linkedin className="h-4 w-4 text-blue-700" />
-                                <span className="text-sm text-gray-400">LinkedIn</span>
-                              </div>
-                              <span className="text-sm text-blue-400">{deviceData.socialMedia.linkedin}</span>
+                            <span className="text-sm text-gray-500 italic">Unknown</span>
+                          </div>
+
+                          <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
+                            <div className="flex items-center gap-3">
+                              <Linkedin className="h-4 w-4 text-blue-700" />
+                              <span className="text-sm text-gray-400">LinkedIn</span>
                             </div>
-                          )}
+                            <span className="text-sm text-gray-500 italic">Unknown</span>
+                          </div>
                         </>
                       )}
 
@@ -1124,9 +1118,9 @@ export function PhoneTracker() {
             </div>
           </div>
         </div>
-
-        {/* Right Panel */}
+                {/* Right Panel */}
         <div className="flex-1 relative bg-[#050510] overflow-hidden">
+
           {/* Map Toggle */}
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#1e1f2c]/90 backdrop-blur-sm border border-gray-700/50 rounded-lg flex z-20">
             <button
@@ -1149,6 +1143,27 @@ export function PhoneTracker() {
             </button>
           </div>
 
+          {/* ✅ GPS Disabled Disclaimer */}
+          {deviceData && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-16 left-1/2 transform -translate-x-1/2 z-20 w-[90%] max-w-lg"
+            >
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-2 flex items-start gap-3">
+                <AlertTriangle className="h-4 w-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-yellow-400/90 leading-relaxed">
+                  <span className="font-semibold text-yellow-400">Notice: </span>
+                  The target device's GPS is currently
+                  <span className="font-semibold"> unavailable or disabled</span>.
+                  The location displayed is an estimated position based on
+                  <span className="font-semibold"> last known data</span>, carrier
+                  triangulation, and IP geolocation records. Accuracy may vary.
+                </p>
+              </div>
+            </motion.div>
+          )}
+
           {/* Location Overlay */}
           {deviceData && (
             <motion.div
@@ -1157,8 +1172,8 @@ export function PhoneTracker() {
               className="absolute bottom-4 left-4 z-20 bg-[#1e1f2c]/90 backdrop-blur-sm rounded-lg p-3 border border-gray-700/50"
             >
               <div className="flex items-center gap-2 text-sm mb-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-gray-300">Live tracking:</span>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-300">Last known location:</span>
                 <span className="text-white font-medium">{deviceData.city}, {deviceData.country}</span>
               </div>
               <div className="text-xs text-gray-400 font-mono">
@@ -1170,6 +1185,11 @@ export function PhoneTracker() {
                   <span>Population: {deviceData.cityPopulation.toLocaleString()}</span>
                 </div>
               )}
+              {/* ✅ GPS off badge */}
+              <div className="mt-2 flex items-center gap-1 text-xs text-yellow-500/80">
+                <AlertTriangle className="h-3 w-3" />
+                <span>GPS unavailable — estimated location</span>
+              </div>
             </motion.div>
           )}
 
