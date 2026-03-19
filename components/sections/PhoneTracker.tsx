@@ -233,7 +233,6 @@ const citiesDatabase: Record<string, City[]> = {
   ],
 };
 
-// Carriers database
 const carriers: Record<string, string[]> = {
   SG: ["Singtel", "StarHub", "M1", "TPG", "Circles.Life", "GOMO", "Zero1", "VIVIFI", "MyRepublic", "CHANGI"],
   US: ["AT&T", "Verizon", "T-Mobile", "US Cellular", "Cricket Wireless", "MetroPCS", "Boost Mobile", "Google Fi", "Mint Mobile", "Visible"],
@@ -247,20 +246,18 @@ const carriers: Record<string, string[]> = {
   IN: ["Jio", "Airtel", "VI (Vodafone Idea)", "BSNL", "MTNL", "Tata Docomo", "Reliance", "Telenor", "Aircel", "MTS"],
 };
 
-// Device models
 const deviceModels: string[] = [
   "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15", "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14",
-  "Samsung Galaxy S24 Ultra", "Samsung Galaxy S24+", "Samsung Galaxy S24", "Samsung Galaxy Z Fold5", "Samsung Galaxy Z Flip5",
-  "Google Pixel 8 Pro", "Google Pixel 8", "Google Pixel 7a", "Google Pixel Fold",
-  "Xiaomi 14 Pro", "Xiaomi 13 Ultra", "Redmi Note 13 Pro", "POCO F5 Pro",
-  "OnePlus 12", "OnePlus Open", "OnePlus 11", "OnePlus Nord 3",
-  "Oppo Find X7 Ultra", "Oppo Reno 11 Pro", "Vivo X100 Pro", "Vivo V30",
-  "Sony Xperia 1 V", "Sony Xperia 5 V", "Nothing Phone (2)", "Nothing Phone (2a)",
-  "Motorola Edge 40 Pro", "Motorola Razr 40 Ultra", "Huawei P60 Pro", "Honor Magic 6 Pro",
-  "Asus ROG Phone 8", "Asus Zenfone 11 Ultra", "Realme GT 5 Pro", "Realme 12 Pro+",
+  "Samsung Galaxy S24 Ultra", "Samsung Galaxy S24+", "Samsung Galaxy S24", "Samsung Galaxy Z Fold5",
+  "Google Pixel 8 Pro", "Google Pixel 8", "Google Pixel 7a",
+  "Xiaomi 14 Pro", "Xiaomi 13 Ultra", "Redmi Note 13 Pro",
+  "OnePlus 12", "OnePlus Open", "OnePlus 11",
+  "Oppo Find X7 Ultra", "Vivo X100 Pro",
+  "Sony Xperia 1 V", "Nothing Phone (2)",
+  "Motorola Edge 40 Pro", "Huawei P60 Pro",
+  "Asus ROG Phone 8", "Realme GT 5 Pro",
 ];
 
-// OS versions
 const osVersions: Record<string, string[]> = {
   iOS: ["iOS 17.4.1", "iOS 17.3.1", "iOS 17.2.1", "iOS 16.7.5", "iOS 16.6.1"],
   Android: ["Android 14", "Android 13", "Android 12", "Android 11", "Android 10"],
@@ -268,10 +265,11 @@ const osVersions: Record<string, string[]> = {
 };
 
 export function PhoneTracker() {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [localNumber, setLocalNumber] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [countries, setCountries] = useState<Country[]>([]);
   const [showCountries, setShowCountries] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [checkProgress, setCheckProgress] = useState(0);
   const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "complete" | "error">("idle");
@@ -284,27 +282,30 @@ export function PhoneTracker() {
   const [searchLog, setSearchLog] = useState<string[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // Fetch countries
+  // ✅ Full number = country code + local number
+  const getDialCode = (country: Country | null) => {
+    if (!country) return "";
+    return `${country.idd?.root}${country.idd?.suffixes?.[0] || ""}`;
+  };
+
+  const fullPhoneNumber = selectedCountry
+    ? `${getDialCode(selectedCountry)}${localNumber}`
+    : localNumber;
+
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         setLoadingCountries(true);
         setApiError(null);
-
         const response = await fetch(
           "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flags,idd,capital,region,latlng,currencies,languages"
         );
-
         if (!response.ok) throw new Error(`API returned ${response.status}`);
-
         const data = await response.json();
-
         const countriesWithCodes = data
           .filter(
             (c: any) =>
-              c &&
-              typeof c === "object" &&
-              c.idd?.root &&
+              c?.idd?.root &&
               Array.isArray(c.idd?.suffixes) &&
               c.idd.suffixes.length > 0
           )
@@ -323,69 +324,51 @@ export function PhoneTracker() {
           .sort((a: any, b: any) => a.name.common.localeCompare(b.name.common));
 
         setCountries(countriesWithCodes);
-
         const singapore = countriesWithCodes.find((c: any) => c.cca2 === "SG");
-        if (singapore) {
-          setSelectedCountry(singapore);
-        } else if (countriesWithCodes.length > 0) {
-          setSelectedCountry(countriesWithCodes[0]);
-        }
+        setSelectedCountry(singapore || countriesWithCodes[0]);
       } catch (error) {
-        console.error("Failed to fetch countries:", error);
-        setApiError(
-          error instanceof Error ? error.message : "Failed to load countries"
-        );
-
-        const fallbackCountries = [
-          {
-            name: { common: "Singapore", official: "Republic of Singapore" },
-            cca2: "SG",
-            cca3: "SGP",
-            flags: {
-              svg: "https://flagcdn.com/sg.svg",
-              png: "https://flagcdn.com/w320/sg.png",
-            },
-            idd: { root: "+6", suffixes: ["5"] },
-            capital: ["Singapore"],
-            region: "Asia",
-            subregion: "South-Eastern Asia",
-            latlng: [1.2833, 103.8333] as [number, number],
-            currencies: { SGD: { name: "Singapore dollar", symbol: "$" } },
-            languages: { eng: "English", zho: "Chinese", msa: "Malay", tam: "Tamil" },
-            population: 5685807,
-            timezones: ["UTC+08:00"],
-          },
-        ];
-        setCountries(fallbackCountries);
-        setSelectedCountry(fallbackCountries[0]);
+        setApiError(error instanceof Error ? error.message : "Failed to load countries");
+        const fallback = [{
+          name: { common: "Singapore", official: "Republic of Singapore" },
+          cca2: "SG", cca3: "SGP",
+          flags: { svg: "https://flagcdn.com/sg.svg", png: "https://flagcdn.com/w320/sg.png" },
+          idd: { root: "+6", suffixes: ["5"] },
+          capital: ["Singapore"], region: "Asia", subregion: "South-Eastern Asia",
+          latlng: [1.2833, 103.8333] as [number, number],
+          currencies: { SGD: { name: "Singapore dollar", symbol: "$" } },
+          languages: { eng: "English" }, population: 5685807, timezones: ["UTC+08:00"],
+        }];
+        setCountries(fallback);
+        setSelectedCountry(fallback[0]);
       } finally {
         setLoadingCountries(false);
       }
     };
-
     fetchCountries();
   }, []);
 
+  const filteredCountries = countries.filter((c) =>
+    c.name.common.toLowerCase().includes(countrySearch.toLowerCase()) ||
+    getDialCode(c).includes(countrySearch)
+  );
+
   const getRandomCity = (countryCode: string): City | null => {
-    const countryCities = citiesDatabase[countryCode];
-    if (!countryCities || countryCities.length === 0) return null;
-    return countryCities[Math.floor(Math.random() * countryCities.length)];
+    const list = citiesDatabase[countryCode];
+    if (!list || list.length === 0) return null;
+    return list[Math.floor(Math.random() * list.length)];
   };
 
   const handleCountrySelect = (country: Country) => {
     setSelectedCountry(country);
     setShowCountries(false);
+    setCountrySearch("");
   };
 
-  const saveToHistory = (data: DeviceData) => {
-    historyService.saveEntry(data);
-  };
+  const saveToHistory = (data: DeviceData) => historyService.saveEntry(data);
 
-  // ✅ Fixed: safe mapping from HistoryEntry to DeviceData
   const loadFromHistory = (entry: HistoryEntry) => {
-    setPhoneNumber(entry.number);
-
-    const mappedData: DeviceData = {
+    setLocalNumber(entry.number);
+    const mapped: DeviceData = {
       number: entry.number,
       country: entry.country,
       countryCode: entry.countryCode,
@@ -400,10 +383,6 @@ export function PhoneTracker() {
       longitude: `${entry.lngNum.toFixed(4)}°E`,
       latNum: entry.latNum,
       lngNum: entry.lngNum,
-      capital: undefined,
-      currency: undefined,
-      language: undefined,
-      population: undefined,
       cityPopulation: entry.cityPopulation,
       timestamp: entry.timestamp,
       carrier: entry.carrier,
@@ -414,61 +393,57 @@ export function PhoneTracker() {
       riskScore: entry.riskScore,
       darkWebMentions: entry.darkWebMentions,
     };
-
-    setDeviceData(mappedData);
+    setDeviceData(mapped);
     setCheckStatus("complete");
     setIsHistoryOpen(false);
   };
 
-  const checkExistingSearch = (number: string): DeviceData | undefined => {
+  const checkExistingSearch = (number: string) => {
     const history = historyService.getHistory();
-    return history.find((item) => item.number === number) as
-      | DeviceData
-      | undefined;
+    return history.find((item) => item.number === number) as DeviceData | undefined;
   };
 
   const startSearchSequence = async () => {
-    if (!phoneNumber || !selectedCountry) return;
-
+    if (!localNumber || !selectedCountry) return;
     setIsChecking(true);
     setCheckStatus("checking");
     setCheckProgress(0);
     setSearchStage(0);
     setSearchLog([]);
 
-    const stages = [
-      { progress: 5,  duration: 2000, message: "🛰️ Establishing secure connection...",          log: "🛰️ Connecting to global satellite network via encrypted tunnel" },
-      { progress: 10, duration: 2000, message: "🔐 Handshaking with GSM network...",             log: "🔐 TLS 1.3 handshake with carrier network complete" },
-      { progress: 15, duration: 1500, message: "📡 Triangulating from cell towers...",           log: "📡 Received signal from 3 cell towers in range" },
-      { progress: 18, duration: 2000, message: "📱 Querying mobile carrier database...",         log: `📱 Looking up carrier for +${selectedCountry.idd?.root}${phoneNumber}` },
-      { progress: 22, duration: 2500, message: "🔄 Cross-referencing IMSI registry...",          log: "🔄 IMSI: 525-01-1234567890 found in global registry" },
-      { progress: 25, duration: 2000, message: "🏢 Identifying network operator...",             log: `🏢 Carrier: ${carriers[selectedCountry.cca2]?.[0] || "Unknown"}` },
-      { progress: 28, duration: 2000, message: "🔍 Scanning Facebook profiles...",               log: "🔍 Facebook: Searching for associated accounts..." },
-      { progress: 32, duration: 2000, message: "📸 Checking Instagram activity...",              log: "📸 Instagram: Found 2 possible profile matches" },
-      { progress: 35, duration: 2000, message: "🐦 Scanning Twitter/X mentions...",              log: "🐦 Twitter: 147 posts detected in last 30 days" },
-      { progress: 38, duration: 2000, message: "💼 LinkedIn professional search...",             log: "💼 LinkedIn: Professional network identified" },
-      { progress: 42, duration: 3000, message: "🌐 Accessing surface web databases...",          log: "🌐 Public records: 3 addresses found" },
-      { progress: 45, duration: 3000, message: "🔒 Bypassing regional restrictions...",          log: "🔒 Geo-blocking circumvented via VPN mesh network" },
-      { progress: 48, duration: 3500, message: "🌑 Initiating dark web crawler...",              log: "🌑 Dark web: Scanning 3 marketplaces and 5 forums" },
-      { progress: 52, duration: 3000, message: "🕸️ Parsing .onion directories...",              log: "🕸️ Found 12 mentions across 4 dark web sites" },
-      { progress: 55, duration: 3000, message: "⚠️ Checking compromised credentials...",        log: "⚠️ 3 credential dumps found containing phone number" },
-      { progress: 58, duration: 2000, message: "📍 Requesting GPS coordinates...",               log: "📍 GPS signal acquired from 8 satellites" },
-      { progress: 62, duration: 2000, message: "🗺️ Cross-referencing Google Maps API...",       log: "🗺️ Reverse geocoding: Converting coordinates to address" },
-      { progress: 65, duration: 2000, message: "🏘️ Identifying nearby landmarks...",            log: "🏘️ Found 15 points of interest within 1km radius" },
-      { progress: 68, duration: 2000, message: "🚦 Analyzing movement patterns...",              log: "🚦 Device stationary for last 6 hours" },
-      { progress: 72, duration: 2000, message: "📱 Extracting device information...",            log: "📱 Device model identified" },
-      { progress: 75, duration: 2000, message: "🔋 Checking battery status...",                  log: "🔋 Battery: 78% capacity, 3.7V" },
-      { progress: 78, duration: 2000, message: "📶 Analyzing network fingerprints...",           log: "📶 WiFi BSSID: 74:da:38:f2:9c:41 detected" },
-      { progress: 82, duration: 2000, message: "🔑 Extracting SIM card details...",              log: "🔑 ICCID: 8961012345678901234f" },
-      { progress: 85, duration: 2000, message: "📊 Compiling intelligence report...",            log: "📊 Aggregating data from 27 different sources" },
-      { progress: 88, duration: 2000, message: "🔍 Performing cross-validation...",              log: "🔍 93% confidence in location accuracy" },
-      { progress: 92, duration: 2000, message: "🛡️ Encrypting sensitive data...",               log: "🛡️ AES-256 encryption applied to personal data" },
-      { progress: 95, duration: 2000, message: "📦 Preparing final report...",                   log: "📦 Final report ready for display" },
-      { progress: 98, duration: 2000, message: "✅ Finalizing location data...",                 log: "✅ Location data verified and ready" },
-      { progress: 100, duration: 1000, message: "🎯 Device located successfully!",               log: "🎯 Device location confirmed and locked" },
-    ];
+    const dialCode = getDialCode(selectedCountry);
 
-    setSearchLog([]);
+    const stages = [
+      { progress: 5,   duration: 2000, message: "🛰️ Establishing secure connection...",        log: "🛰️ Connecting to global satellite network via encrypted tunnel" },
+      { progress: 10,  duration: 2000, message: "🔐 Handshaking with GSM network...",           log: "🔐 TLS 1.3 handshake with carrier network complete" },
+      { progress: 15,  duration: 1500, message: "📡 Triangulating from cell towers...",         log: "📡 Received signal from 3 cell towers in range" },
+      { progress: 18,  duration: 2000, message: "📱 Querying mobile carrier database...",       log: `📱 Looking up carrier for ${dialCode}${localNumber}` },
+      { progress: 22,  duration: 2500, message: "🔄 Cross-referencing IMSI registry...",        log: "🔄 IMSI: 525-01-1234567890 found in global registry" },
+      { progress: 25,  duration: 2000, message: "🏢 Identifying network operator...",           log: `🏢 Carrier: ${carriers[selectedCountry.cca2]?.[0] || "Unknown"}` },
+      { progress: 28,  duration: 2000, message: "🔍 Scanning Facebook profiles...",             log: "🔍 Facebook: Searching for associated accounts..." },
+      { progress: 32,  duration: 2000, message: "📸 Checking Instagram activity...",            log: "📸 Instagram: Found 2 possible profile matches" },
+      { progress: 35,  duration: 2000, message: "🐦 Scanning Twitter/X mentions...",            log: "🐦 Twitter: 147 posts detected in last 30 days" },
+      { progress: 38,  duration: 2000, message: "💼 LinkedIn professional search...",           log: "💼 LinkedIn: Professional network identified" },
+      { progress: 42,  duration: 3000, message: "🌐 Accessing surface web databases...",        log: "🌐 Public records: 3 addresses found" },
+      { progress: 45,  duration: 3000, message: "🔒 Bypassing regional restrictions...",        log: "🔒 Geo-blocking circumvented via VPN mesh network" },
+      { progress: 48,  duration: 3500, message: "🌑 Initiating dark web crawler...",            log: "🌑 Dark web: Scanning 3 marketplaces and 5 forums" },
+      { progress: 52,  duration: 3000, message: "🕸️ Parsing .onion directories...",            log: "🕸️ Found 12 mentions across 4 dark web sites" },
+      { progress: 55,  duration: 3000, message: "⚠️ Checking compromised credentials...",      log: "⚠️ 3 credential dumps found containing phone number" },
+      { progress: 58,  duration: 2000, message: "📍 Requesting GPS coordinates...",             log: "📍 GPS signal acquired from 8 satellites" },
+      { progress: 62,  duration: 2000, message: "🗺️ Cross-referencing Google Maps API...",     log: "🗺️ Reverse geocoding: Converting coordinates to address" },
+      { progress: 65,  duration: 2000, message: "🏘️ Identifying nearby landmarks...",          log: "🏘️ Found 15 points of interest within 1km radius" },
+      { progress: 68,  duration: 2000, message: "🚦 Analyzing movement patterns...",            log: "🚦 Device stationary for last 6 hours" },
+      { progress: 72,  duration: 2000, message: "📱 Extracting device information...",          log: "📱 Device model identified" },
+      { progress: 75,  duration: 2000, message: "🔋 Checking battery status...",                log: "🔋 Battery: 78% capacity, 3.7V" },
+      { progress: 78,  duration: 2000, message: "📶 Analyzing network fingerprints...",         log: "📶 WiFi BSSID: 74:da:38:f2:9c:41 detected" },
+      { progress: 82,  duration: 2000, message: "🔑 Extracting SIM card details...",            log: "🔑 ICCID: 8961012345678901234f" },
+      { progress: 85,  duration: 2000, message: "📊 Compiling intelligence report...",          log: "📊 Aggregating data from 27 different sources" },
+      { progress: 88,  duration: 2000, message: "🔍 Performing cross-validation...",            log: "🔍 93% confidence in location accuracy" },
+      { progress: 92,  duration: 2000, message: "🛡️ Encrypting sensitive data...",             log: "🛡️ AES-256 encryption applied to personal data" },
+      { progress: 95,  duration: 2000, message: "📦 Preparing final report...",                 log: "📦 Final report ready for display" },
+      { progress: 98,  duration: 2000, message: "✅ Finalizing location data...",               log: "✅ Location data verified and ready" },
+      { progress: 100, duration: 1000, message: "🎯 Device located successfully!",              log: "🎯 Device location confirmed and locked" },
+    ];
 
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i];
@@ -480,11 +455,9 @@ export function PhoneTracker() {
     }
 
     const randomCity = getRandomCity(selectedCountry.cca2);
-
     const currency = selectedCountry.currencies
       ? (Object.values(selectedCountry.currencies)[0] as { name: string; symbol: string })
       : null;
-
     const language = selectedCountry.languages
       ? (Object.values(selectedCountry.languages)[0] as string)
       : null;
@@ -497,71 +470,62 @@ export function PhoneTracker() {
     const firstName = ["John","Jane","Alex","Sam","Chris","Pat","Taylor","Jordan","Casey","Riley"][Math.floor(Math.random() * 10)];
     const lastName  = ["Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez"][Math.floor(Math.random() * 10)];
     const randomNum = Math.floor(Math.random() * 1000);
-
-    const streets      = ["Main","Oak","Pine","Maple","Cedar","Washington","Lincoln","Park","Lake","Hill"];
-    const streetTypes  = ["Street","Avenue","Road","Drive","Lane","Boulevard"];
+    const streets     = ["Main","Oak","Pine","Maple","Cedar","Washington","Lincoln","Park","Lake","Hill"];
+    const streetTypes = ["Street","Avenue","Road","Drive","Lane","Boulevard"];
     const randomStreet = `${streets[Math.floor(Math.random() * streets.length)]} ${streetTypes[Math.floor(Math.random() * streetTypes.length)]}`;
 
-    const riskScore       = Math.floor(Math.random() * 30) + 70;
-    const darkWebMentions = Math.floor(Math.random() * 5) + 1;
-
     const newDeviceData: DeviceData = {
-      number:       phoneNumber,
-      country:      selectedCountry.name.common,
-      countryCode:  selectedCountry.cca2,
-      flag:         selectedCountry.flags.svg || selectedCountry.flags.png || "",
-      region:       region,
-      city:         cityName,
-      street:       `${randomStreet}, ${cityName}`,
-      build:        "Central Business District",
-      location:     `${latNum.toFixed(4)}°N, ${lngNum.toFixed(4)}°E`,
-      routes:       `via ${cityName} Highway`,
-      latitude:     `${latNum.toFixed(4)}°N`,
-      longitude:    `${lngNum.toFixed(4)}°E`,
+      number:      fullPhoneNumber,
+      country:     selectedCountry.name.common,
+      countryCode: selectedCountry.cca2,
+      flag:        selectedCountry.flags.svg || selectedCountry.flags.png || "",
+      region,
+      city:        cityName,
+      street:      `${randomStreet}, ${cityName}`,
+      build:       "Central Business District",
+      location:    `${latNum.toFixed(4)}°N, ${lngNum.toFixed(4)}°E`,
+      routes:      `via ${cityName} Highway`,
+      latitude:    `${latNum.toFixed(4)}°N`,
+      longitude:   `${lngNum.toFixed(4)}°E`,
       latNum,
       lngNum,
-      capital:      selectedCountry.capital?.[0],
-      currency:     currency ? `${currency.name} (${currency.symbol})` : "Unknown",
-      language:     language || "Unknown",
-      population:   selectedCountry.population?.toLocaleString(),
+      capital:     selectedCountry.capital?.[0],
+      currency:    currency ? `${currency.name} (${currency.symbol})` : "Unknown",
+      language:    language || "Unknown",
+      population:  selectedCountry.population?.toLocaleString(),
       cityPopulation: randomCity?.population,
-      timestamp:    Date.now(),
-      carrier:      carriers[selectedCountry.cca2]?.[Math.floor(Math.random() * (carriers[selectedCountry.cca2]?.length || 1))] || "Unknown",
-      deviceModel:  deviceModels[Math.floor(Math.random() * deviceModels.length)],
-      os:           Math.random() > 0.7
-                      ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)]
-                      : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
-      lastSeen:     new Date().toLocaleString(),
+      timestamp:   Date.now(),
+      carrier:     carriers[selectedCountry.cca2]?.[Math.floor(Math.random() * (carriers[selectedCountry.cca2]?.length || 1))] || "Unknown",
+      deviceModel: deviceModels[Math.floor(Math.random() * deviceModels.length)],
+      os: Math.random() > 0.7
+        ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)]
+        : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
+      lastSeen: new Date().toLocaleString(),
       socialMedia: {
         facebook:  `facebook.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
         instagram: `@${firstName.toLowerCase()}${lastName.toLowerCase()}${randomNum}`,
         twitter:   `@${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
         linkedin:  `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${randomNum}`,
       },
-      riskScore,
-      darkWebMentions,
+      riskScore:       Math.floor(Math.random() * 30) + 70,
+      darkWebMentions: Math.floor(Math.random() * 5) + 1,
     };
 
     saveToHistory(newDeviceData);
     setDeviceData(newDeviceData);
     setCheckStatus("complete");
-
-    setTimeout(() => {
-      setIsChecking(false);
-    }, 1500);
+    setTimeout(() => setIsChecking(false), 1500);
   };
 
   const handleLaunch = async () => {
-    if (!phoneNumber || !selectedCountry) return;
-
-    const existingSearch = checkExistingSearch(phoneNumber);
-    if (existingSearch) {
-      setDeviceData(existingSearch);
+    if (!localNumber || !selectedCountry) return;
+    const existing = checkExistingSearch(fullPhoneNumber);
+    if (existing) {
+      setDeviceData(existing);
       setCheckStatus("complete");
       setCheckMessage("Device located successfully!");
       return;
     }
-
     await startSearchSequence();
   };
 
@@ -572,15 +536,13 @@ export function PhoneTracker() {
     setDeviceData(null);
     setIsChecking(false);
     setSearchLog([]);
+    setLocalNumber("");
   };
 
-  const formatDate = (date: Date) => {
-    return date
-      .toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })
-      .toUpperCase();
-  };
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }).toUpperCase();
 
-    return (
+  return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
       {/* Header */}
       <header className="border-b border-gray-800/50 px-6 py-3">
@@ -616,13 +578,7 @@ export function PhoneTracker() {
             <button className="text-gray-400 hover:text-white transition">
               <Settings className="h-5 w-5" />
             </button>
-            <button
-              onClick={() => setIsHistoryOpen(true)}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition"
-            >
-              <Clock className="h-5 w-5" />
-            </button>
-          </div>
+            </div>
         </div>
       </header>
 
@@ -631,7 +587,6 @@ export function PhoneTracker() {
         {/* Left Panel */}
         <div className="w-[450px] bg-[#141824] border-r border-gray-800/50 overflow-y-auto">
           <div className="p-6">
-            {/* Date and Security */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-sm text-gray-400">{formatDate(new Date())}</p>
               <div className="flex items-center gap-2">
@@ -640,7 +595,6 @@ export function PhoneTracker() {
               </div>
             </div>
 
-            {/* API Error */}
             {apiError && (
               <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                 <p className="text-xs text-red-400">API Error: {apiError}</p>
@@ -648,7 +602,7 @@ export function PhoneTracker() {
               </div>
             )}
 
-            {/* Search Progress Log */}
+            {/* Search Log */}
             <AnimatePresence>
               {isChecking && searchLog.length > 0 && (
                 <motion.div
@@ -660,9 +614,7 @@ export function PhoneTracker() {
                   <div className="p-3 bg-gray-800/50 border-b border-gray-700/50 flex items-center gap-2">
                     <Activity className="h-4 w-4 text-blue-500 animate-pulse" />
                     <span className="text-xs font-medium text-gray-300">Live Search Feed</span>
-                    <span className="text-xs text-gray-500 ml-auto">
-                      {searchLog.length}/29 operations
-                    </span>
+                    <span className="text-xs text-gray-500 ml-auto">{searchLog.length}/29 operations</span>
                   </div>
                   <div className="h-48 overflow-y-auto p-2 font-mono text-xs">
                     {searchLog.map((log, index) => (
@@ -670,7 +622,6 @@ export function PhoneTracker() {
                         key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
                         className={`py-1 border-l-2 pl-3 mb-1 ${
                           index === searchLog.length - 1
                             ? "border-blue-500 text-blue-400"
@@ -691,7 +642,7 @@ export function PhoneTracker() {
               )}
             </AnimatePresence>
 
-            {/* Checking Status */}
+            {/* Progress */}
             <AnimatePresence mode="wait">
               {isChecking && (
                 <motion.div
@@ -707,15 +658,9 @@ export function PhoneTracker() {
                         <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-ping"></span>
                       </div>
                     )}
-                    {checkStatus === "complete" && (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    )}
-                    <span className="text-sm font-medium text-gray-300">
-                      {checkMessage}
-                    </span>
+                    {checkStatus === "complete" && <CheckCircle className="h-5 w-5 text-green-500" />}
+                    <span className="text-sm font-medium text-gray-300">{checkMessage}</span>
                   </div>
-
-                  {/* Progress Bar */}
                   <div className="relative mb-2">
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                       <motion.div
@@ -724,20 +669,14 @@ export function PhoneTracker() {
                         className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
                       />
                     </div>
-                    <span className="absolute right-0 top-3 text-xs text-gray-400">
-                      {checkProgress}%
-                    </span>
+                    <span className="absolute right-0 top-3 text-xs text-gray-400">{checkProgress}%</span>
                   </div>
-
-                  {/* Stage Indicators */}
                   <div className="grid grid-cols-3 gap-1 mt-4">
-                    {[0, 1, 2, 3, 4, 5].map((stage) => (
+                    {[0,1,2,3,4,5].map((stage) => (
                       <div
                         key={stage}
                         className={`h-1 rounded-full transition-colors ${
-                          Math.floor(searchStage / 6) >= stage
-                            ? "bg-blue-500"
-                            : "bg-gray-700"
+                          Math.floor(searchStage / 6) >= stage ? "bg-blue-500" : "bg-gray-700"
                         }`}
                       />
                     ))}
@@ -746,16 +685,14 @@ export function PhoneTracker() {
               )}
             </AnimatePresence>
 
-            {/* Phone Input Section */}
+            {/* ✅ Phone Input Section */}
             <div className="mb-8">
               <h2 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 Target Phone Number
               </h2>
               <p className="text-xs text-gray-500 mb-4">
-                Enter the target phone number in international format. The system
-                will scan multiple databases including social media and dark web
-                sources.
+                Select a country — the dial code is added automatically. Enter only the local number.
               </p>
 
               {/* Country Selector */}
@@ -765,129 +702,129 @@ export function PhoneTracker() {
                   disabled={loadingCountries || isChecking}
                   className="w-full flex items-center justify-between bg-[#1e1f2c] border border-gray-700/50 rounded-lg px-4 py-3 text-left hover:bg-[#252634] transition disabled:opacity-50"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0">
                     {selectedCountry?.flags?.svg ? (
                       <img
                         src={selectedCountry.flags.svg}
-                        alt={selectedCountry.flags.alt || `Flag of ${selectedCountry.name.common}`}
+                        alt={`Flag of ${selectedCountry.name.common}`}
                         className="w-6 h-4 object-cover rounded flex-shrink-0"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = selectedCountry.flags.png || "";
-                        }}
+                        onError={(e) => { (e.target as HTMLImageElement).src = selectedCountry.flags.png || ""; }}
                       />
                     ) : (
                       <span className="text-lg flex-shrink-0">🌍</span>
                     )}
-                    <div className="truncate">
-                      <span className="text-white font-medium">
-                        {selectedCountry?.cca2 || "SG"}
-                      </span>
-                      <span className="text-gray-400 text-sm ml-2 truncate">
-                        / {selectedCountry?.name.common || "Singapore"}
-                      </span>
-                    </div>
-                    <span className="text-blue-500 ml-2 flex-shrink-0">
-                      {selectedCountry?.idd?.root}
-                      {selectedCountry?.idd?.suffixes?.[0] || "+65"}
+                    <span className="text-white font-medium">
+                      {selectedCountry?.name.common || "Select Country"}
+                    </span>
+                    {/* ✅ Dial code badge */}
+                    <span className="ml-auto px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded font-mono flex-shrink-0">
+                      {getDialCode(selectedCountry)}
                     </span>
                   </div>
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ${
+                    className={`h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ml-2 ${
                       showCountries ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
-                {/* Country Dropdown */}
+                {/* Dropdown */}
                 {showCountries && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-full left-0 right-0 mt-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto"
+                    className="absolute top-full left-0 right-0 mt-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden flex flex-col"
                   >
-                    {loadingCountries ? (
-                      <div className="p-4 text-center text-gray-400">
-                        <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
-                        <span className="text-sm">Loading countries...</span>
-                      </div>
-                    ) : (
-                      countries.map((country) => {
-                        const hasCities = citiesDatabase[country.cca2];
-                        const cityCount = hasCities
-                          ? citiesDatabase[country.cca2].length
-                          : 0;
-                        return (
-                          <button
-                            key={country.cca2}
-                            onClick={() => handleCountrySelect(country)}
-                            className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#252634] transition"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              {country.flags?.svg && (
-                                <img
-                                  src={country.flags.svg}
-                                  alt={country.flags.alt || `Flag of ${country.name.common}`}
-                                  className="w-6 h-4 object-cover rounded flex-shrink-0"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src = country.flags.png || "";
-                                  }}
-                                />
-                              )}
-                              <div className="truncate">
-                                <span className="text-white">{country.cca2}</span>
-                                <span className="text-gray-400 text-sm ml-2 truncate">
-                                  / {country.name.common}
+                    {/* Search inside dropdown */}
+                    <div className="p-2 border-b border-gray-700/50">
+                      <input
+                        type="text"
+                        value={countrySearch}
+                        onChange={(e) => setCountrySearch(e.target.value)}
+                        placeholder="Search country or dial code..."
+                        className="w-full bg-[#141824] border border-gray-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-500/50"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="overflow-y-auto max-h-80">
+                      {loadingCountries ? (
+                        <div className="p-4 text-center text-gray-400">
+                          <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
+                          <span className="text-sm">Loading countries...</span>
+                        </div>
+                      ) : filteredCountries.length === 0 ? (
+                        <div className="p-4 text-center text-gray-500 text-sm">No countries found</div>
+                      ) : (
+                        filteredCountries.map((country) => {
+                          const cityCount = citiesDatabase[country.cca2]?.length || 0;
+                          return (
+                            <button
+                              key={country.cca2}
+                              onClick={() => handleCountrySelect(country)}
+                              className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#252634] transition"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                {country.flags?.svg && (
+                                  <img
+                                    src={country.flags.svg}
+                                    alt={`Flag of ${country.name.common}`}
+                                    className="w-6 h-4 object-cover rounded flex-shrink-0"
+                                    onError={(e) => { (e.target as HTMLImageElement).src = country.flags.png || ""; }}
+                                  />
+                                )}
+                                <span className="text-white truncate">{country.name.common}</span>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {cityCount > 0 && (
+                                  <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">
+                                    {cityCount} cities
+                                  </span>
+                                )}
+                                <span className="text-blue-400 font-mono text-sm">
+                                  {getDialCode(country)}
                                 </span>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {hasCities && (
-                                <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded">
-                                  {cityCount} cities
-                                </span>
-                              )}
-                              <span className="text-blue-500 flex-shrink-0 ml-2">
-                                {country.idd?.root}
-                                {country.idd?.suffixes?.[0] || ""}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })
-                    )}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </div>
 
-              {/* Phone Input */}
+              {/* ✅ Phone Input with auto dial code prefix */}
               <div className="flex gap-2 mb-4">
-                <div className="flex-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg px-4 py-3 flex items-center group focus-within:border-blue-500/50 transition">
-                  <Phone className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder={
-                      selectedCountry
-                        ? `${selectedCountry.idd?.root}${selectedCountry.idd?.suffixes?.[0] || ""} 9123 4567`
-                        : "+65 9123 4567"
-                    }
-                    className="bg-transparent outline-none text-white placeholder-gray-600 w-full"
-                    disabled={isChecking}
-                  />
+                <div className="flex-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg flex items-center group focus-within:border-blue-500/50 transition overflow-hidden">
+                  {/* Dial code prefix — read only */}
+                  <span className="px-3 py-3 text-blue-400 font-mono text-sm bg-[#252634] border-r border-gray-700/50 flex-shrink-0">
+                    {getDialCode(selectedCountry) || "+--"}
+                  </span>
+                  <div className="flex items-center flex-1 px-3">
+                    <Phone className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
+                    <input
+                      type="tel"
+                      value={localNumber}
+                      onChange={(e) => setLocalNumber(e.target.value.replace(/[^0-9\s\-]/g, ""))}
+                      placeholder="9123 4567"
+                      className="bg-transparent outline-none text-white placeholder-gray-600 w-full"
+                      disabled={isChecking}
+                    />
+                  </div>
                 </div>
+
                 {checkStatus === "complete" ? (
                   <button
                     onClick={handleReset}
                     className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition whitespace-nowrap flex items-center gap-2"
                   >
                     <Search className="h-4 w-4" />
-                    NEW SEARCH
+                    NEW
                   </button>
                 ) : (
                   <button
                     onClick={handleLaunch}
-                    disabled={isChecking || !phoneNumber || !selectedCountry}
+                    disabled={isChecking || !localNumber || !selectedCountry}
                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium px-6 py-3 rounded-lg transition whitespace-nowrap flex items-center gap-2"
                   >
                     {isChecking ? (
@@ -905,14 +842,22 @@ export function PhoneTracker() {
                 )}
               </div>
 
-              {/* Security Note */}
+              {/* Full number preview */}
+              {localNumber && selectedCountry && (
+                <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                  <Globe className="h-3 w-3 text-blue-500" />
+                  <span>Full number: </span>
+                  <span className="text-blue-400 font-mono">{fullPhoneNumber}</span>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Fingerprint className="h-3 w-3" />
                 <span>All scans are encrypted and anonymous</span>
               </div>
             </div>
 
-            {/* Device Data Section */}
+            {/* Device Data */}
             <AnimatePresence mode="wait">
               {deviceData && (
                 <motion.div
@@ -926,16 +871,14 @@ export function PhoneTracker() {
                       <Database className="h-4 w-4" />
                       Intelligence Report
                     </h2>
-                    {deviceData.riskScore && (
-                      <div
-                        className={`flex items-center gap-1 px-2 py-1 rounded ${
-                          deviceData.riskScore > 85
-                            ? "bg-red-500/20 text-red-400"
-                            : deviceData.riskScore > 70
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-green-500/20 text-green-400"
-                        }`}
-                      >
+                                        {deviceData.riskScore && (
+                      <div className={`flex items-center gap-1 px-2 py-1 rounded ${
+                        deviceData.riskScore > 85
+                          ? "bg-red-500/20 text-red-400"
+                          : deviceData.riskScore > 70
+                          ? "bg-yellow-500/20 text-yellow-400"
+                          : "bg-green-500/20 text-green-400"
+                      }`}>
                         <Shield className="h-3 w-3" />
                         <span className="text-xs">Risk Score: {deviceData.riskScore}</span>
                       </div>
@@ -952,7 +895,7 @@ export function PhoneTracker() {
                           <span className="text-sm text-gray-400">Phone</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-white font-medium">{deviceData.number}</span>
+                          <span className="text-sm text-white font-medium font-mono">{deviceData.number}</span>
                           {deviceData.flag && (
                             <img
                               src={deviceData.flag}
@@ -1067,52 +1010,40 @@ export function PhoneTracker() {
                               SOCIAL MEDIA PRESENCE
                             </span>
                           </div>
-
                           {deviceData.socialMedia.facebook && (
                             <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                               <div className="flex items-center gap-3">
                                 <Facebook className="h-4 w-4 text-blue-500" />
                                 <span className="text-sm text-gray-400">Facebook</span>
                               </div>
-                              <span className="text-sm text-blue-400">
-                                {deviceData.socialMedia.facebook}
-                              </span>
+                              <span className="text-sm text-blue-400">{deviceData.socialMedia.facebook}</span>
                             </div>
                           )}
-
                           {deviceData.socialMedia.instagram && (
                             <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                               <div className="flex items-center gap-3">
                                 <Instagram className="h-4 w-4 text-pink-500" />
                                 <span className="text-sm text-gray-400">Instagram</span>
                               </div>
-                              <span className="text-sm text-pink-400">
-                                {deviceData.socialMedia.instagram}
-                              </span>
+                              <span className="text-sm text-pink-400">{deviceData.socialMedia.instagram}</span>
                             </div>
                           )}
-
                           {deviceData.socialMedia.twitter && (
                             <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                               <div className="flex items-center gap-3">
                                 <Twitter className="h-4 w-4 text-sky-500" />
                                 <span className="text-sm text-gray-400">Twitter/X</span>
                               </div>
-                              <span className="text-sm text-sky-400">
-                                {deviceData.socialMedia.twitter}
-                              </span>
+                              <span className="text-sm text-sky-400">{deviceData.socialMedia.twitter}</span>
                             </div>
                           )}
-
                           {deviceData.socialMedia.linkedin && (
                             <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                               <div className="flex items-center gap-3">
                                 <Linkedin className="h-4 w-4 text-blue-700" />
                                 <span className="text-sm text-gray-400">LinkedIn</span>
                               </div>
-                              <span className="text-sm text-blue-400">
-                                {deviceData.socialMedia.linkedin}
-                              </span>
+                              <span className="text-sm text-blue-400">{deviceData.socialMedia.linkedin}</span>
                             </div>
                           )}
                         </>
@@ -1125,9 +1056,7 @@ export function PhoneTracker() {
                             <ShieldAlert className="h-4 w-4 text-red-500" />
                             <span className="text-sm text-gray-400">Dark Web Mentions</span>
                           </div>
-                          <span className="text-sm text-red-400">
-                            {deviceData.darkWebMentions} instances
-                          </span>
+                          <span className="text-sm text-red-400">{deviceData.darkWebMentions} instances</span>
                         </div>
                       )}
 
@@ -1155,12 +1084,9 @@ export function PhoneTracker() {
                     </div>
                   </div>
 
-                  {/* Data Freshness */}
                   <div className="mt-2 flex items-center justify-end gap-2 text-xs text-gray-600">
                     <Clock className="h-3 w-3" />
-                    <span>
-                      Data collected {new Date(deviceData.timestamp).toLocaleTimeString()}
-                    </span>
+                    <span>Data collected {new Date(deviceData.timestamp).toLocaleTimeString()}</span>
                   </div>
                 </motion.div>
               )}
@@ -1199,16 +1125,14 @@ export function PhoneTracker() {
           </div>
         </div>
 
-        {/* Right Panel - Maps */}
+        {/* Right Panel */}
         <div className="flex-1 relative bg-[#050510] overflow-hidden">
-          {/* Map Type Toggle */}
+          {/* Map Toggle */}
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-[#1e1f2c]/90 backdrop-blur-sm border border-gray-700/50 rounded-lg flex z-20">
             <button
               onClick={() => setMapType("google")}
               className={`px-4 py-2 text-sm rounded-l-lg flex items-center gap-2 transition ${
-                mapType === "google"
-                  ? "bg-blue-500/20 text-blue-500"
-                  : "text-gray-400 hover:text-white"
+                mapType === "google" ? "bg-blue-500/20 text-blue-500" : "text-gray-400 hover:text-white"
               }`}
             >
               <MapIcon className="h-4 w-4" />
@@ -1217,9 +1141,7 @@ export function PhoneTracker() {
             <button
               onClick={() => setMapType("earth")}
               className={`px-4 py-2 text-sm rounded-r-lg flex items-center gap-2 transition ${
-                mapType === "earth"
-                  ? "bg-blue-500/20 text-blue-500"
-                  : "text-gray-400 hover:text-white"
+                mapType === "earth" ? "bg-blue-500/20 text-blue-500" : "text-gray-400 hover:text-white"
               }`}
             >
               <Globe className="h-4 w-4" />
@@ -1227,7 +1149,7 @@ export function PhoneTracker() {
             </button>
           </div>
 
-          {/* Location Info Overlay */}
+          {/* Location Overlay */}
           {deviceData && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1237,9 +1159,7 @@ export function PhoneTracker() {
               <div className="flex items-center gap-2 text-sm mb-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-gray-300">Live tracking:</span>
-                <span className="text-white font-medium">
-                  {deviceData.city}, {deviceData.country}
-                </span>
+                <span className="text-white font-medium">{deviceData.city}, {deviceData.country}</span>
               </div>
               <div className="text-xs text-gray-400 font-mono">
                 {deviceData.latNum.toFixed(6)}°, {deviceData.lngNum.toFixed(6)}°
@@ -1268,14 +1188,12 @@ export function PhoneTracker() {
                     <Satellite className="h-12 w-12 text-blue-500 animate-spin" />
                   </div>
                 </div>
-                <p className="mt-4 text-blue-400 font-mono text-sm">
-                  SCANNING GLOBAL NETWORKS
-                </p>
+                <p className="mt-4 text-blue-400 font-mono text-sm">SCANNING GLOBAL NETWORKS</p>
               </div>
             </motion.div>
           )}
 
-          {/* Map Content */}
+          {/* Map */}
           {mapType === "google" ? (
             deviceData ? (
               <FreeGoogleMap
@@ -1288,12 +1206,8 @@ export function PhoneTracker() {
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#050510] to-[#0a0a20]">
                 <div className="text-center">
                   <Compass className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">
-                    Enter a phone number and click LAUNCH
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    to begin global satellite tracking
-                  </p>
+                  <p className="text-gray-400">Enter a phone number and click LAUNCH</p>
+                  <p className="text-gray-600 text-sm mt-2">to begin global satellite tracking</p>
                 </div>
               </div>
             )

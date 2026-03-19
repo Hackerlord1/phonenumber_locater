@@ -30,7 +30,13 @@ export default function HistoryPage() {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ✅ Fix 1: lastUpdated only set on client side
+  const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    setIsMounted(true);
+    setLastUpdated(new Date().toLocaleString());
     loadHistory();
   }, []);
 
@@ -40,6 +46,7 @@ export default function HistoryPage() {
     setHistory(items);
     applyFilters(items, searchQuery, filterCountry, filterRisk, sortBy, sortOrder);
     setStats(historyService.getStats());
+    setLastUpdated(new Date().toLocaleString());
     setIsLoading(false);
   };
 
@@ -193,6 +200,22 @@ export default function HistoryPage() {
     return 'bg-green-500/20';
   };
 
+  // ✅ Fix 2: Safe date formatter — only runs on client
+  const formatDate = (timestamp: number) => {
+    if (!isMounted) return "";
+    return new Date(timestamp).toLocaleDateString();
+  };
+
+  const formatTime = (timestamp: number) => {
+    if (!isMounted) return "";
+    return new Date(timestamp).toLocaleTimeString();
+  };
+
+  const formatDateTime = (timestamp: number) => {
+    if (!isMounted) return "";
+    return new Date(timestamp).toLocaleString();
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
       {/* Header */}
@@ -278,10 +301,13 @@ export default function HistoryPage() {
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <span className="text-sm text-gray-400">Last Search</span>
               </div>
+              {/* ✅ Fix 3: Safe stats date */}
               <p className="text-lg font-bold text-white">
-                {stats.lastSearchDate
-                  ? new Date(stats.lastSearchDate).toLocaleDateString()
-                  : 'Never'}
+                {isMounted
+                  ? stats.lastSearchDate
+                    ? new Date(stats.lastSearchDate).toLocaleDateString()
+                    : 'Never'
+                  : '...'}
               </p>
             </div>
           </div>
@@ -440,7 +466,9 @@ export default function HistoryPage() {
                           className="w-5 h-3 object-cover rounded"
                         />
                       )}
-                      <span className="text-sm font-medium text-white">{entry.number}</span>
+                      <span className="text-sm font-medium text-white font-mono">
+                        {entry.number}
+                      </span>
                     </div>
                   </div>
 
@@ -459,7 +487,8 @@ export default function HistoryPage() {
                       <div className={`inline-flex items-center gap-1 px-2 py-1 rounded ${getRiskBg(entry.riskScore)}`}>
                         <ShieldAlert className={`h-3 w-3 ${getRiskColor(entry.riskScore)}`} />
                         <span className={`text-xs font-medium ${getRiskColor(entry.riskScore)}`}>
-                          {entry.riskScore}{entry.darkWebMentions ? ` (${entry.darkWebMentions} DW)` : ''}
+                          {entry.riskScore}
+                          {entry.darkWebMentions ? ` (${entry.darkWebMentions} DW)` : ''}
                         </span>
                       </div>
                     ) : (
@@ -467,13 +496,10 @@ export default function HistoryPage() {
                     )}
                   </div>
 
+                  {/* ✅ Fix 4: Use safe formatDate/formatTime helpers */}
                   <div className="col-span-2">
-                    <p className="text-sm text-white">
-                      {new Date(entry.timestamp).toLocaleDateString()}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(entry.timestamp).toLocaleTimeString()}
-                    </p>
+                    <p className="text-sm text-white">{formatDate(entry.timestamp)}</p>
+                    <p className="text-xs text-gray-500">{formatTime(entry.timestamp)}</p>
                   </div>
 
                   <div className="col-span-1 flex items-center gap-2">
@@ -630,10 +656,11 @@ export default function HistoryPage() {
                               </span>
                             </div>
                           )}
+                          {/* ✅ Fix 5: Use safe formatDateTime helper */}
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-gray-500" />
                             <span className="text-sm text-gray-400">
-                              Tracked: {new Date(entry.timestamp).toLocaleString()}
+                              Tracked: {formatDateTime(entry.timestamp)}
                             </span>
                           </div>
                         </div>
@@ -669,10 +696,10 @@ export default function HistoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* Footer */}
+        {/* ✅ Fix 6: Footer with safe lastUpdated state */}
         <div className="mt-4 flex items-center justify-between text-xs text-gray-600">
           <span>Showing {filteredHistory.length} of {history.length} entries</span>
-          <span>Last updated: {new Date().toLocaleString()}</span>
+          <span>Last updated: {lastUpdated}</span>
         </div>
       </div>
 
