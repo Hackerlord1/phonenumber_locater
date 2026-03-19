@@ -9,7 +9,7 @@ import {
   ChevronDown, ChevronUp, Database, RefreshCw, X,
   Facebook, Twitter, Instagram, Linkedin, Smartphone,
   Radio, Activity, Clock, AlertTriangle, CheckCircle,
-  Loader2, Users
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { historyService } from "@/components/history/HistoryService";
@@ -398,7 +398,7 @@ export default function HistoryPage() {
           {/* Loading State */}
           {isLoading && (
             <div className="p-12 text-center">
-              <Loader2 className="h-8 w-8 text-blue-500 animate-spin mx-auto mb-4" />
+              <RefreshCw className="h-8 w-8 text-blue-500 animate-spin mx-auto mb-4" />
               <p className="text-gray-400">Loading history...</p>
             </div>
           )}
