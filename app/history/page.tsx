@@ -73,7 +73,6 @@ export default function HistoryPage() {
 
     // Apply risk filter
     if (risk !== 'all') {
-      const riskNum = parseInt(risk);
       filtered = filtered.filter(entry => {
         if (!entry.riskScore) return false;
         if (risk === 'high') return entry.riskScore > 85;
@@ -541,19 +540,19 @@ export default function HistoryPage() {
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Model:</span>
-                              <span className="text-white">{entry.deviceModel}</span>
+                              <span className="text-white">{entry.deviceModel || 'Unknown'}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">OS:</span>
-                              <span className="text-white">{entry.os}</span>
+                              <span className="text-white">{entry.os || 'Unknown'}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Carrier:</span>
-                              <span className="text-white">{entry.carrier}</span>
+                              <span className="text-white">{entry.carrier || 'Unknown'}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Last Seen:</span>
-                              <span className="text-white">{entry.lastSeen}</span>
+                              <span className="text-white">{entry.lastSeen || 'Unknown'}</span>
                             </div>
                           </div>
                         </div>
