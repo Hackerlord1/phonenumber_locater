@@ -1,6 +1,7 @@
-// app/history/page.tsx
 "use client";
-
+//━━━━━━━━━━━━━━━━━━━━━━━━
+// IMPORTS
+//━━━━━━━━━━━━━━━━━━━━━━━━
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,14 +9,20 @@ import {
   ShieldAlert, MapPin, Globe, Calendar,
   ChevronDown, ChevronUp, Database, RefreshCw,
   Facebook, Twitter, Instagram, Linkedin, Smartphone,
-  Activity, Clock, AlertTriangle,
-  Users
+  Activity, Clock, AlertTriangle, Users
 } from "lucide-react";
 import Link from "next/link";
 import { historyService } from "@/components/history/HistoryService";
 import { HistoryEntry, HistoryStats } from "@/components/history/HistoryTypes";
 
+//━━━━━━━━━━━━━━━━━━━━━━━━
+// PAGE COMPONENT
+//━━━━━━━━━━━━━━━━━━━━━━━━
 export default function HistoryPage() {
+
+  //━━━━━━━━━━━━━━━━━━━━━━
+  // STATE
+  //━━━━━━━━━━━━━━━━━━━━━━
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<HistoryStats | null>(null);
@@ -29,17 +36,21 @@ export default function HistoryPage() {
   const [filterRisk, setFilterRisk] = useState<string>('all');
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // ✅ Fix 1: lastUpdated only set on client side
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
 
+  //━━━━━━━━━━━━━━━━━━━━━━
+  // EFFECTS
+  //━━━━━━━━━━━━━━━━━━━━━━
   useEffect(() => {
     setIsMounted(true);
     setLastUpdated(new Date().toLocaleString());
     loadHistory();
   }, []);
 
+  //━━━━━━━━━━━━━━━━━━━━━━
+  // FUNCTIONS
+  //━━━━━━━━━━━━━━━━━━━━━━
   const loadHistory = () => {
     setIsLoading(true);
     const items = historyService.getHistory();
@@ -86,13 +97,9 @@ export default function HistoryPage() {
 
     filtered.sort((a, b) => {
       let comparison = 0;
-      if (sort === 'date') {
-        comparison = a.timestamp - b.timestamp;
-      } else if (sort === 'country') {
-        comparison = a.country.localeCompare(b.country);
-      } else if (sort === 'risk') {
-        comparison = (a.riskScore || 0) - (b.riskScore || 0);
-      }
+      if (sort === 'date') comparison = a.timestamp - b.timestamp;
+      else if (sort === 'country') comparison = a.country.localeCompare(b.country);
+      else if (sort === 'risk') comparison = (a.riskScore || 0) - (b.riskScore || 0);
       return order === 'asc' ? comparison : -comparison;
     });
 
@@ -200,7 +207,6 @@ export default function HistoryPage() {
     return 'bg-green-500/20';
   };
 
-  // ✅ Fix 2: Safe date formatter — only runs on client
   const formatDate = (timestamp: number) => {
     if (!isMounted) return "";
     return new Date(timestamp).toLocaleDateString();
@@ -216,8 +222,12 @@ export default function HistoryPage() {
     return new Date(timestamp).toLocaleString();
   };
 
+  //━━━━━━━━━━━━━━━━━━━━━━
+  // RENDER
+  //━━━━━━━━━━━━━━━━━━━━━━
   return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
+
       {/* Header */}
       <header className="border-b border-gray-800/50 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -257,7 +267,6 @@ export default function HistoryPage() {
             <button
               onClick={loadHistory}
               className="p-2 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition text-gray-400 hover:text-white"
-              title="Refresh"
             >
               <RefreshCw className="h-4 w-4" />
             </button>
@@ -267,6 +276,7 @@ export default function HistoryPage() {
 
       {/* Main Content */}
       <div className="p-6">
+
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -277,7 +287,6 @@ export default function HistoryPage() {
               </div>
               <p className="text-2xl font-bold text-white">{stats.totalSearches}</p>
             </div>
-
             <div className="bg-gradient-to-br from-green-600/10 to-emerald-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Globe className="h-5 w-5 text-green-500" />
@@ -285,7 +294,6 @@ export default function HistoryPage() {
               </div>
               <p className="text-2xl font-bold text-white">{stats.uniqueCountries}</p>
             </div>
-
             <div className="bg-gradient-to-br from-yellow-600/10 to-orange-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Activity className="h-5 w-5 text-yellow-500" />
@@ -295,13 +303,11 @@ export default function HistoryPage() {
                 {stats.averageRiskScore}
               </p>
             </div>
-
             <div className="bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-gray-800/50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <span className="text-sm text-gray-400">Last Search</span>
               </div>
-              {/* ✅ Fix 3: Safe stats date */}
               <p className="text-lg font-bold text-white">
                 {isMounted
                   ? stats.lastSearchDate
@@ -313,7 +319,7 @@ export default function HistoryPage() {
           </div>
         )}
 
-        {/* Filters and Search */}
+        {/* Filters */}
         <div className="bg-[#1e1f2c] border border-gray-800/50 rounded-lg p-4 mb-6">
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[300px]">
@@ -328,7 +334,6 @@ export default function HistoryPage() {
                 />
               </div>
             </div>
-
             <select
               value={filterCountry}
               onChange={(e) => setFilterCountry(e.target.value)}
@@ -339,7 +344,6 @@ export default function HistoryPage() {
                 <option key={code} value={code}>{code}</option>
               ))}
             </select>
-
             <select
               value={filterRisk}
               onChange={(e) => setFilterRisk(e.target.value)}
@@ -350,7 +354,6 @@ export default function HistoryPage() {
               <option value="medium">Medium Risk (70-85)</option>
               <option value="low">Low Risk (below 70)</option>
             </select>
-
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'country' | 'risk')}
@@ -360,7 +363,6 @@ export default function HistoryPage() {
               <option value="country">Sort by Country</option>
               <option value="risk">Sort by Risk</option>
             </select>
-
             <button
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
               className="px-4 py-2 bg-[#141824] border border-gray-700/50 rounded-lg text-sm text-white hover:bg-[#1e1f2c] transition flex items-center gap-2"
@@ -370,7 +372,6 @@ export default function HistoryPage() {
                 : <ChevronDown className="h-4 w-4" />}
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
-
             {selectedEntries.length > 0 && (
               <button
                 onClick={deleteSelected}
@@ -380,7 +381,6 @@ export default function HistoryPage() {
                 Delete {selectedEntries.length} Selected
               </button>
             )}
-
             <button
               onClick={() => setShowClearAllConfirm(true)}
               className="px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 rounded-lg transition flex items-center gap-2"
@@ -393,6 +393,7 @@ export default function HistoryPage() {
 
         {/* History List */}
         <div className="bg-[#1e1f2c] border border-gray-800/50 rounded-lg overflow-hidden">
+
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 bg-gray-800/30 border-b border-gray-800/50 text-xs font-medium text-gray-400">
             <div className="col-span-1 flex items-center gap-2">
@@ -414,7 +415,7 @@ export default function HistoryPage() {
             <div className="col-span-1">Actions</div>
           </div>
 
-          {/* Loading State */}
+          {/* Loading */}
           {isLoading && (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 text-blue-500 animate-spin mx-auto mb-4" />
@@ -422,20 +423,18 @@ export default function HistoryPage() {
             </div>
           )}
 
-          {/* Empty State */}
+          {/* Empty */}
           {!isLoading && filteredHistory.length === 0 && (
             <div className="p-12 text-center">
               <History className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">No history entries found</p>
               <p className="text-sm text-gray-600 mt-2">
-                {searchQuery
-                  ? 'Try adjusting your search filters'
-                  : 'Searches will appear here'}
+                {searchQuery ? 'Try adjusting your search filters' : 'Searches will appear here'}
               </p>
             </div>
           )}
 
-          {/* History Items */}
+          {/* Items */}
           <AnimatePresence>
             {filteredHistory.map((entry) => (
               <motion.div
@@ -445,7 +444,7 @@ export default function HistoryPage() {
                 exit={{ opacity: 0, x: -100 }}
                 className="border-b border-gray-800/50 last:border-0"
               >
-                {/* Main Row */}
+                {/* Row */}
                 <div className="grid grid-cols-12 gap-4 p-4 hover:bg-[#252634] transition items-center">
                   <div className="col-span-1">
                     <input
@@ -456,7 +455,6 @@ export default function HistoryPage() {
                       className="rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-0"
                     />
                   </div>
-
                   <div className="col-span-2">
                     <div className="flex items-center gap-2">
                       {entry.flag && (
@@ -471,17 +469,14 @@ export default function HistoryPage() {
                       </span>
                     </div>
                   </div>
-
                   <div className="col-span-2">
                     <p className="text-sm text-white">{entry.city}</p>
                     <p className="text-xs text-gray-500">{entry.country}</p>
                   </div>
-
                   <div className="col-span-2">
                     <p className="text-sm text-white">{entry.deviceModel || 'Unknown'}</p>
                     <p className="text-xs text-gray-500">{entry.carrier || 'Unknown'}</p>
                   </div>
-
                   <div className="col-span-2">
                     {entry.riskScore ? (
                       <div className={`inline-flex items-center gap-1 px-2 py-1 rounded ${getRiskBg(entry.riskScore)}`}>
@@ -495,13 +490,10 @@ export default function HistoryPage() {
                       <span className="text-xs text-gray-600">No data</span>
                     )}
                   </div>
-
-                  {/* ✅ Fix 4: Use safe formatDate/formatTime helpers */}
                   <div className="col-span-2">
                     <p className="text-sm text-white">{formatDate(entry.timestamp)}</p>
                     <p className="text-xs text-gray-500">{formatTime(entry.timestamp)}</p>
                   </div>
-
                   <div className="col-span-1 flex items-center gap-2">
                     <button
                       onClick={() =>
@@ -536,6 +528,7 @@ export default function HistoryPage() {
                       className="bg-[#141824] border-t border-gray-800/50 p-4"
                     >
                       <div className="grid grid-cols-3 gap-6">
+
                         {/* Location Details */}
                         <div>
                           <h4 className="text-xs font-medium text-gray-500 mb-3 flex items-center gap-2">
@@ -602,38 +595,30 @@ export default function HistoryPage() {
                               SOCIAL MEDIA
                             </h4>
                             <div className="space-y-2">
-                              {entry.socialMedia.facebook && (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Facebook className="h-3 w-3 text-blue-500" />
-                                  <span className="text-gray-400 truncate">
-                                    {entry.socialMedia.facebook}
-                                  </span>
-                                </div>
-                              )}
-                              {entry.socialMedia.instagram && (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Instagram className="h-3 w-3 text-pink-500" />
-                                  <span className="text-gray-400 truncate">
-                                    {entry.socialMedia.instagram}
-                                  </span>
-                                </div>
-                              )}
-                              {entry.socialMedia.twitter && (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Twitter className="h-3 w-3 text-sky-500" />
-                                  <span className="text-gray-400 truncate">
-                                    {entry.socialMedia.twitter}
-                                  </span>
-                                </div>
-                              )}
-                              {entry.socialMedia.linkedin && (
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Linkedin className="h-3 w-3 text-blue-700" />
-                                  <span className="text-gray-400 truncate">
-                                    {entry.socialMedia.linkedin}
-                                  </span>
-                                </div>
-                              )}
+                              <div className="flex items-center gap-2 text-sm">
+                                <Facebook className="h-3 w-3 text-blue-500" />
+                                <span className="text-gray-400">
+                                  {entry.socialMedia.facebook || 'Unknown'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm">
+                                <Instagram className="h-3 w-3 text-pink-500" />
+                                <span className="text-gray-400">
+                                  {entry.socialMedia.instagram || 'Unknown'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm">
+                                <Twitter className="h-3 w-3 text-sky-500" />
+                                <span className="text-gray-400">
+                                  {entry.socialMedia.twitter || 'Unknown'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm">
+                                <Linkedin className="h-3 w-3 text-blue-700" />
+                                <span className="text-gray-400">
+                                  {entry.socialMedia.linkedin || 'Unknown'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -656,7 +641,6 @@ export default function HistoryPage() {
                               </span>
                             </div>
                           )}
-                          {/* ✅ Fix 5: Use safe formatDateTime helper */}
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-gray-500" />
                             <span className="text-sm text-gray-400">
@@ -696,7 +680,7 @@ export default function HistoryPage() {
           </AnimatePresence>
         </div>
 
-        {/* ✅ Fix 6: Footer with safe lastUpdated state */}
+        {/* Footer */}
         <div className="mt-4 flex items-center justify-between text-xs text-gray-600">
           <span>Showing {filteredHistory.length} of {history.length} entries</span>
           <span>Last updated: {lastUpdated}</span>
@@ -745,6 +729,7 @@ export default function HistoryPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
+
+    </div>  // ✅ closes main div
+  );        // ✅ closes return
+}           // ✅ closes HistoryPage

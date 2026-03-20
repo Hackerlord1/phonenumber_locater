@@ -245,6 +245,7 @@ const carriers: Record<string, string[]> = {
   IN: ["Jio", "Airtel", "VI (Vodafone Idea)", "BSNL", "MTNL", "Tata Docomo", "Reliance", "Telenor", "Aircel", "MTS"],
 };
 
+// ✅ Kept for reference but no longer used in output
 const deviceModels: string[] = [
   "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15", "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14",
   "Samsung Galaxy S24 Ultra", "Samsung Galaxy S24+", "Samsung Galaxy S24", "Samsung Galaxy Z Fold5",
@@ -257,6 +258,7 @@ const deviceModels: string[] = [
   "Asus ROG Phone 8", "Realme GT 5 Pro",
 ];
 
+// ✅ Kept for reference but no longer used in output
 const osVersions: Record<string, string[]> = {
   iOS: ["iOS 17.4.1", "iOS 17.3.1", "iOS 17.2.1", "iOS 16.7.5", "iOS 16.6.1"],
   Android: ["Android 14", "Android 13", "Android 12", "Android 11", "Android 10"],
@@ -357,6 +359,8 @@ export function PhoneTracker() {
   };
 
   const handleCountrySelect = (country: Country) => {
+    // ✅ Only allow Singapore to be selected
+    if (country.cca2 !== "SG") return;
     setSelectedCountry(country);
     setShowCountries(false);
     setCountrySearch("");
@@ -384,10 +388,9 @@ export function PhoneTracker() {
       cityPopulation: entry.cityPopulation,
       timestamp: entry.timestamp,
       carrier: entry.carrier,
-      deviceModel: entry.deviceModel,
-      os: entry.os,
+      deviceModel: "Unknown",  // ✅ Always Unknown
+      os: "Unknown",           // ✅ Always Unknown
       lastSeen: entry.lastSeen,
-      // ✅ Always Unknown from history too
       socialMedia: {
         facebook: "Unknown",
         instagram: "Unknown",
@@ -437,7 +440,7 @@ export function PhoneTracker() {
       { progress: 62,  duration: 2000, message: "🗺️ Cross-referencing Google Maps API...",     log: "🗺️ Reverse geocoding: Converting coordinates to address" },
       { progress: 65,  duration: 2000, message: "🏘️ Identifying nearby landmarks...",          log: "🏘️ Found 15 points of interest within 1km radius" },
       { progress: 68,  duration: 2000, message: "🚦 Analyzing movement patterns...",            log: "🚦 Device stationary for last 6 hours" },
-      { progress: 72,  duration: 2000, message: "📱 Extracting device information...",          log: "📱 Device model identified" },
+      { progress: 72,  duration: 2000, message: "📱 Extracting device information...",          log: "📱 Device model: Unable to retrieve — returning Unknown" },
       { progress: 75,  duration: 2000, message: "🔋 Checking battery status...",                log: "🔋 Battery: 78% capacity, 3.7V" },
       { progress: 78,  duration: 2000, message: "📶 Analyzing network fingerprints...",         log: "📶 WiFi BSSID: 74:da:38:f2:9c:41 detected" },
       { progress: 82,  duration: 2000, message: "🔑 Extracting SIM card details...",            log: "🔑 ICCID: 8961012345678901234f" },
@@ -497,12 +500,9 @@ export function PhoneTracker() {
       cityPopulation: randomCity?.population,
       timestamp:   Date.now(),
       carrier:     carriers[selectedCountry.cca2]?.[Math.floor(Math.random() * (carriers[selectedCountry.cca2]?.length || 1))] || "Unknown",
-      deviceModel: deviceModels[Math.floor(Math.random() * deviceModels.length)],
-      os: Math.random() > 0.7
-        ? osVersions.iOS[Math.floor(Math.random() * osVersions.iOS.length)]
-        : osVersions.Android[Math.floor(Math.random() * osVersions.Android.length)],
+      deviceModel: "Unknown",  // ✅ Always Unknown
+      os:          "Unknown",  // ✅ Always Unknown
       lastSeen: new Date().toLocaleString(),
-      // ✅ Always Unknown
       socialMedia: {
         facebook:  "Unknown",
         instagram: "Unknown",
@@ -757,11 +757,18 @@ export function PhoneTracker() {
                       ) : (
                         filteredCountries.map((country) => {
                           const cityCount = citiesDatabase[country.cca2]?.length || 0;
+                          const isSingapore = country.cca2 === "SG"; // ✅ Check if SG
+
                           return (
                             <button
                               key={country.cca2}
-                              onClick={() => handleCountrySelect(country)}
-                              className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#252634] transition"
+                              onClick={() => isSingapore ? handleCountrySelect(country) : undefined}
+                              disabled={!isSingapore} // ✅ Disable all non-SG
+                              className={`w-full flex items-center justify-between px-4 py-3 transition
+                                ${isSingapore
+                                  ? "hover:bg-[#252634] cursor-pointer"
+                                  : "opacity-30 cursor-not-allowed grayscale"
+                                }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 {country.flags?.svg && (
@@ -773,14 +780,20 @@ export function PhoneTracker() {
                                   />
                                 )}
                                 <span className="text-white truncate">{country.name.common}</span>
+                                {/* ✅ Show Unavailable badge for non-SG */}
+                                {!isSingapore && (
+                                  <span className="text-xs px-2 py-0.5 bg-gray-700/50 text-gray-500 rounded ml-1">
+                                    Unavailable
+                                  </span>
+                                )}
                               </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
-                                {cityCount > 0 && (
+                                {cityCount > 0 && isSingapore && (
                                   <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">
                                     {cityCount} cities
                                   </span>
                                 )}
-                                <span className="text-blue-400 font-mono text-sm">
+                                <span className={`font-mono text-sm ${isSingapore ? "text-blue-400" : "text-gray-600"}`}>
                                   {getDialCode(country)}
                                 </span>
                               </div>
@@ -793,7 +806,7 @@ export function PhoneTracker() {
                 )}
               </div>
 
-              {/* Phone Input */}
+              {/* Phone Input Field */}
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 bg-[#1e1f2c] border border-gray-700/50 rounded-lg flex items-center group focus-within:border-blue-500/50 transition overflow-hidden">
                   <span className="px-3 py-3 text-blue-400 font-mono text-sm bg-[#252634] border-r border-gray-700/50 flex-shrink-0">
@@ -877,7 +890,7 @@ export function PhoneTracker() {
                           ? "bg-yellow-500/20 text-yellow-400"
                           : "bg-green-500/20 text-green-400"
                       }`}>
-                        <Shield className="h-3 w-3" />
+                                                <Shield className="h-3 w-3" />
                         <span className="text-xs">Risk Score: {deviceData.riskScore}</span>
                       </div>
                     )}
@@ -892,7 +905,7 @@ export function PhoneTracker() {
                           <Phone className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-400">Phone</span>
                         </div>
-                                                <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3">
                           <span className="text-sm text-white font-medium font-mono">{deviceData.number}</span>
                           {deviceData.flag && (
                             <img
@@ -915,14 +928,25 @@ export function PhoneTracker() {
                         </div>
                       )}
 
-                      {/* Device */}
+                      {/* Device — ✅ Always shows Unknown */}
                       <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
                         <div className="flex items-center gap-3">
                           <Smartphone className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-400">Device</span>
                         </div>
-                        <span className="text-sm text-white">
-                          {deviceData.deviceModel} • {deviceData.os}
+                        <span className="text-sm text-gray-500 italic">
+                          Unknown
+                        </span>
+                      </div>
+
+                      {/* OS — ✅ Always shows Unknown */}
+                      <div className="flex items-center justify-between px-4 py-2 hover:bg-[#252634]">
+                        <div className="flex items-center gap-3">
+                          <Smartphone className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm text-gray-400">OS</span>
+                        </div>
+                        <span className="text-sm text-gray-500 italic">
+                          Unknown
                         </span>
                       </div>
 
@@ -999,7 +1023,7 @@ export function PhoneTracker() {
                         <span className="text-sm text-white">{deviceData.street}</span>
                       </div>
 
-                      {/* ✅ Social Media — Always Unknown */}
+                      {/* Social Media — ✅ Always Unknown */}
                       {deviceData.socialMedia && (
                         <>
                           <div className="px-4 py-2 bg-gray-800/30">
@@ -1118,7 +1142,8 @@ export function PhoneTracker() {
             </div>
           </div>
         </div>
-                {/* Right Panel */}
+
+        {/* Right Panel */}
         <div className="flex-1 relative bg-[#050510] overflow-hidden">
 
           {/* Map Toggle */}
